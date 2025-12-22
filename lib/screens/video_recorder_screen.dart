@@ -8,7 +8,9 @@ import '../models/video_analysis.dart';
 import '../services/video_analysis_service.dart';
 
 class VideoRecorderScreen extends StatefulWidget {
-  const VideoRecorderScreen({super.key});
+  final String? exerciseName;
+  
+  const VideoRecorderScreen({super.key, this.exerciseName});
 
   @override
   State<VideoRecorderScreen> createState() => _VideoRecorderScreenState();
