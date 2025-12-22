@@ -173,6 +173,20 @@ git push -u origin main
 
 ## 🎯 Commandes pour Demain
 
+### ⚠️ AVANT TOUTE CHOSE : Mettre à jour les informations
+```bash
+# CONSULTEZ CE FICHIER EN PRIORITÉ :
+cat /home/user/flutter_app/TODO_AVANT_PUBLICATION.md
+
+# Informations critiques à modifier :
+# - Email de contact dans README.md et ProfileScreen
+# - Téléphone de contact (si souhaité)
+# - AdMob IDs production (App ID + Unit IDs)
+# - Firebase google-services.json production
+# - Clé API Gemini production
+# - In-App Purchase Product IDs
+```
+
 ### Préparation Build APK
 ```bash
 cd /home/user/flutter_app
@@ -218,6 +232,7 @@ flutter build apk --release
 
 | Fichier | Description |
 |---------|-------------|
+| `TODO_AVANT_PUBLICATION.md` | ⚠️ **CHECKLIST CRITIQUE** - Modifications obligatoires |
 | `COMPLETED_TODAY.md` | Récapitulatif des 5 points complétés |
 | `README.md` | Documentation complète du projet |
 | `docs/SYNTHESE_FINALE.md` | Synthèse détaillée de tout |

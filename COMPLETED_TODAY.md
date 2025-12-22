@@ -305,7 +305,8 @@ Modèle de monétisation détaillé
 **Il ne reste plus qu'à :**
 1. Tester la version web
 2. Pousser vers GitHub
-3. Préparer demain les optimisations et le build APK
+3. ⚠️ **IMPORTANT : Mettre à jour les informations de contact** (voir TODO_AVANT_PUBLICATION.md)
+4. Préparer demain les optimisations et le build APK
 
 ---
 
@@ -315,7 +316,8 @@ Si vous rencontrez un problème :
 1. Consultez les guides dans `docs/`
 2. Vérifiez le README.md
 3. Exécutez `./push_to_github.sh` pour GitHub
-4. Revenez vers moi avec des questions spécifiques
+4. ⚠️ **CONSULTEZ TODO_AVANT_PUBLICATION.md pour les modifications critiques**
+5. Revenez vers moi avec des questions spécifiques
 
 ---
 
