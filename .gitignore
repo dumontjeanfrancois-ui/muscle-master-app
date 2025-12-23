@@ -43,3 +43,15 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Sensitive files - DO NOT COMMIT
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+.env
+*.keystore
+*.jks
+key.properties
+
+# API Keys and secrets
+**/api_keys.dart
+**/secrets.dart
