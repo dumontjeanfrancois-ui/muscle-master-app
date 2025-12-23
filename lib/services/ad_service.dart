@@ -11,16 +11,36 @@ class AdService {
   bool _isInitialized = false;
   bool _isPremium = false;
 
-  // IDs AdMob (à remplacer par vos vrais IDs après création compte AdMob)
+  // IDs AdMob - TEST (Google Sample Ads)
   static const String _testBannerId = 'ca-app-pub-3940256099942544/6300978111';
   static const String _testInterstitialId = 'ca-app-pub-3940256099942544/1033173712';
 
-  // IDs production (à configurer après création compte AdMob)
-  static const String _prodBannerId = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
-  static const String _prodInterstitialId = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
+  // IDs AdMob - PRODUCTION (HomeFit Belgium)
+  // Android
+  static const String _androidBannerId = 'ca-app-pub-9884001565276450/2695677956';
+  static const String _androidInterstitialId = 'ca-app-pub-9884001565276450/2293365030';
+  
+  // iOS
+  static const String _iosBannerId = 'ca-app-pub-9884001565276450/2840159942';
+  static const String _iosInterstitialId = 'ca-app-pub-9884001565276450/9776091621';
 
-  String get bannerId => kDebugMode ? _testBannerId : _prodBannerId;
-  String get interstitialId => kDebugMode ? _testInterstitialId : _prodInterstitialId;
+  String get bannerId {
+    if (kDebugMode) return _testBannerId;
+    // Production: détection plateforme
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return _iosBannerId;
+    }
+    return _androidBannerId; // Android par défaut
+  }
+
+  String get interstitialId {
+    if (kDebugMode) return _testInterstitialId;
+    // Production: détection plateforme
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return _iosInterstitialId;
+    }
+    return _androidInterstitialId; // Android par défaut
+  }
 
   InterstitialAd? _interstitialAd;
   int _interstitialLoadAttempts = 0;
