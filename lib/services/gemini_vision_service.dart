@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/workout_video.dart';
 
 class GeminiVisionService {
-  static const String _apiKey = 'YOUR_GEMINI_API_KEY_HERE'; // Même clé que gemini_service.dart
+  static const String _apiKey = 'AIzaSyD19ooMMrcDFMMSLai2MVSwX3taTc8GguI'; // Clé API Muscle Master
   static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
   
   /// Analyse technique d'un exercice vidéo à partir de frames

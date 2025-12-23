@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GeminiService {
-  // ⚠️ IMPORTANT : Remplacez par votre vraie clé API Gemini
+  // ⚠️ IMPORTANT : Clé API Gemini configurée pour Muscle Master
   // Obtenez-la gratuitement sur : https://makersuite.google.com/app/apikey
-  static const String _apiKey = 'YOUR_GEMINI_API_KEY_HERE';
+  static const String _apiKey = 'AIzaSyD19ooMMrcDFMMSLai2MVSwX3taTc8GguI';
   static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
   
   // Limites gratuites
