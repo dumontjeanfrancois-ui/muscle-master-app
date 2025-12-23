@@ -89,7 +89,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 hintText: 'CODE SECRET',
                 hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
                 filled: true,
-                fillColor: AppTheme.backgroundDark,
+                fillColor: AppTheme.primaryDark,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppTheme.neonBlue),

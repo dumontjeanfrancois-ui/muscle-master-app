@@ -159,7 +159,7 @@ class ProfileScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.amber,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.backgroundDark, width: 2),
+                        border: Border.all(color: AppTheme.primaryDark, width: 2),
                       ),
                       child: const Icon(
                         Icons.workspace_premium,
