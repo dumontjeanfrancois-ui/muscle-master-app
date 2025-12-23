@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'vip_service.dart';
 
 class AdService {
   static AdService? _instance;
@@ -72,7 +73,11 @@ class AdService {
   }
 
   /// Vérifier si les pubs doivent être affichées
-  bool get shouldShowAds => !_isPremium && _isInitialized;
+  /// Les VIP ne voient jamais de publicités
+  bool get shouldShowAds {
+    if (VipService().isVip) return false; // VIP = pas de pubs
+    return !_isPremium && _isInitialized;
+  }
 
   /// Créer une bannière publicitaire
   BannerAd? createBannerAd() {

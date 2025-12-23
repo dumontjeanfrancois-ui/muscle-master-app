@@ -11,6 +11,7 @@ import 'screens/progress_screen.dart';
 import 'screens/profile_screen.dart';
 import 'services/subscription_service.dart';
 import 'services/ad_service.dart';
+import 'services/vip_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,9 @@ void main() async {
   
   // Initialiser AdMob
   await AdService.instance.initialize();
+  
+  // Initialiser VIP Service (Easter Egg)
+  await VipService().initialize();
   
   runApp(const MuscleMasterApp());
 }
@@ -35,6 +39,9 @@ class MuscleMasterApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => SubscriptionService()..initialize('default_user'),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => VipService(),
         ),
       ],
       child: MaterialApp(

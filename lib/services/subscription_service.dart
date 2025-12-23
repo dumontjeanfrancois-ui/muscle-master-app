@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../models/user_subscription.dart';
+import 'vip_service.dart';
 
 class SubscriptionService extends ChangeNotifier {
   final InAppPurchase _iap = InAppPurchase.instance;
@@ -21,7 +22,17 @@ class SubscriptionService extends ChangeNotifier {
 
   // Getters
   UserSubscription? get currentSubscription => _currentSubscription;
-  bool get isPremium => _currentSubscription?.isPremium ?? false;
+  
+  /// Vérifier si l'utilisateur a le premium (via abonnement OU via VIP)
+  bool get isPremium {
+    // Vérifier d'abord le statut VIP
+    if (VipService().isVip) {
+      return true;
+    }
+    // Sinon, vérifier l'abonnement normal
+    return _currentSubscription?.isPremium ?? false;
+  }
+  
   bool get isAvailable => _isAvailable;
   List<ProductDetails> get products => _products;
   bool get purchasePending => _purchasePending;

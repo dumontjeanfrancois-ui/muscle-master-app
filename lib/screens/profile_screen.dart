@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/theme.dart';
+import '../services/vip_service.dart';
 import 'ai_coach_screen.dart';
 import 'real_video_analysis_screen.dart';
 import 'login_screen.dart';
@@ -115,51 +117,120 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileHeader() {
-    return Center(
-      child: Column(
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppTheme.neonBlue,
-                width: 3,
-              ),
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.neonBlue.withOpacity(0.3),
-                  AppTheme.neonPurple.withOpacity(0.3),
+    return Consumer<VipService>(
+      builder: (context, vipService, _) {
+        return Center(
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: vipService.isVip ? Colors.amber : AppTheme.neonBlue,
+                        width: 3,
+                      ),
+                      gradient: LinearGradient(
+                        colors: vipService.isVip
+                            ? [
+                                Colors.amber.withValues(alpha: 0.3),
+                                Colors.orange.withValues(alpha: 0.3),
+                              ]
+                            : [
+                                AppTheme.neonBlue.withValues(alpha: 0.3),
+                                AppTheme.neonPurple.withValues(alpha: 0.3),
+                              ],
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.person_rounded,
+                      size: 50,
+                      color: vipService.isVip ? Colors.amber : AppTheme.neonBlue,
+                    ),
+                  ),
+                  // Badge VIP
+                  if (vipService.isVip)
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppTheme.backgroundDark, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.workspace_premium,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                    ),
                 ],
               ),
-            ),
-            child: Icon(
-              Icons.person_rounded,
-              size: 50,
-              color: AppTheme.neonBlue,
-            ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Champion',
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (vipService.isVip) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.amber, Colors.orange],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.stars, size: 16, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text(
+                            'VIP',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                vipService.isVip
+                    ? 'VIP depuis ${_formatDate(vipService.activationDate)}'
+                    : 'Membre depuis Nov 2024',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Champion',
-            style: TextStyle(
-              color: AppTheme.textPrimary,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Membre depuis Nov 2024',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'récemment';
+    final months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    return '${months[date.month - 1]} ${date.year}';
   }
 
   Widget _buildUserStats() {

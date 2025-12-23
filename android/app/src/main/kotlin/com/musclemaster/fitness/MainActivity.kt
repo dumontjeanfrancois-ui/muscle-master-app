@@ -1,5 +1,6 @@
-package com.musclemaster.muscle_master
+package com.musclemaster.fitness
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity()
+

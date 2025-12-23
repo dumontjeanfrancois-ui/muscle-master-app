@@ -1,11 +1,218 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/theme.dart';
 import '../main.dart';
+import '../services/vip_service.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  int _logoClickCount = 0;
+  DateTime? _lastClickTime;
+
+  /// 🎮 Easter Egg : Détection des 12 clics sur le logo
+  void _onLogoTap() {
+    final now = DateTime.now();
+    
+    // Reset si plus de 3 secondes entre les clics
+    if (_lastClickTime != null && now.difference(_lastClickTime!).inSeconds > 3) {
+      _logoClickCount = 0;
+    }
+    
+    _lastClickTime = now;
+    _logoClickCount++;
+
+    // Animation de feedback
+    if (_logoClickCount > 0 && _logoClickCount < 12) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎮 ${_logoClickCount}/12'),
+          duration: const Duration(milliseconds: 500),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.black54,
+        ),
+      );
+    }
+
+    // Activation du dialogue secret après 12 clics
+    if (_logoClickCount >= 12) {
+      _logoClickCount = 0;
+      _showVipDialog();
+    }
+  }
+
+  /// 🔐 Dialogue secret pour entrer le code VIP
+  void _showVipDialog() {
+    final TextEditingController codeController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppTheme.neonBlue, width: 2),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.stars, color: AppTheme.neonBlue, size: 28),
+            const SizedBox(width: 12),
+            Text(
+              'Accès VIP',
+              style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Entrez le code secret pour activer le mode VIP illimité 🚀',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: codeController,
+              style: TextStyle(color: AppTheme.textPrimary, fontSize: 16, letterSpacing: 2),
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: 'CODE SECRET',
+                hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+                filled: true,
+                fillColor: AppTheme.backgroundDark,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.neonBlue),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.textSecondary),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.neonBlue, width: 2),
+                ),
+              ),
+              textCapitalization: TextCapitalization.characters,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Annuler', style: TextStyle(color: AppTheme.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final code = codeController.text;
+              final vipService = VipService();
+              final success = await vipService.activateVip(code);
+              
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+              
+              if (success) {
+                _showVipSuccessDialog();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('❌ Code incorrect'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.neonBlue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Valider'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🎉 Dialogue de confirmation d'activation VIP
+  void _showVipSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppTheme.neonBlue, width: 3),
+        ),
+        title: Column(
+          children: [
+            Icon(Icons.workspace_premium, color: AppTheme.neonBlue, size: 80),
+            const SizedBox(height: 16),
+            Text(
+              '🎉 VIP ACTIVÉ !',
+              style: TextStyle(
+                color: AppTheme.neonBlue,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildVipFeature('✅ Premium illimité à vie'),
+            _buildVipFeature('✅ Zéro publicité'),
+            _buildVipFeature('✅ IA Coach illimité'),
+            _buildVipFeature('✅ Analyse vidéo illimitée'),
+            _buildVipFeature('✅ Badge VIP exclusif'),
+            const SizedBox(height: 20),
+            Text(
+              'Bienvenue dans la team VIP ! 🚀',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.neonBlue,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            child: const Text('C\'EST PARTI ! 💪', style: TextStyle(fontSize: 16)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVipFeature(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Text(
+        text,
+        style: TextStyle(color: AppTheme.textPrimary, fontSize: 15),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +235,14 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Logo et titre
-                Icon(
-                  Icons.fitness_center,
-                  size: 100,
-                  color: AppTheme.neonBlue,
+                // 🎮 Logo cliquable pour Easter Egg
+                GestureDetector(
+                  onTap: _onLogoTap,
+                  child: Icon(
+                    Icons.fitness_center,
+                    size: 100,
+                    color: AppTheme.neonBlue,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -85,69 +295,15 @@ class WelcomeScreen extends StatelessWidget {
                   icon: Icons.email_outlined,
                   color: AppTheme.neonBlue,
                   textColor: Colors.white,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    );
-                  },
+                  onPressed: () => _navigateToLogin(context),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
 
-                // Séparateur
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: AppTheme.textDisabled)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'OU',
-                        style: TextStyle(color: AppTheme.textDisabled),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: AppTheme.textDisabled)),
-                  ],
-                ),
-                const SizedBox(height: 32),
-
-                // Bouton Mode Démo
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainScreen()),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: AppTheme.neonGreen, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.play_circle_outline, color: AppTheme.neonGreen),
-                      const SizedBox(width: 12),
-                      Text(
-                        'ESSAYER SANS COMPTE',
-                        style: TextStyle(
-                          color: AppTheme.neonGreen,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Termes et conditions
+                // Conditions d'utilisation
                 Text(
-                  'En continuant, vous acceptez nos Conditions d\'utilisation et notre Politique de confidentialité',
+                  'En continuant, vous acceptez nos Conditions d\'utilisation\net notre Politique de confidentialité',
                   style: TextStyle(
-                    color: AppTheme.textDisabled,
+                    color: AppTheme.textSecondary,
                     fontSize: 12,
                   ),
                   textAlign: TextAlign.center,
@@ -177,18 +333,18 @@ class WelcomeScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        elevation: 2,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 28),
+          Icon(icon, size: 24),
           const SizedBox(width: 12),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
+              color: textColor,
             ),
           ),
         ],
@@ -197,36 +353,26 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   void _loginWithGoogle(BuildContext context) {
-    // Simuler connexion Google
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('🔐 Connexion Google en cours... (Mode démo)'),
-        backgroundColor: AppTheme.neonBlue,
-      ),
+      const SnackBar(content: Text('Connexion Google en cours...')),
     );
-    
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
-    });
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
   }
 
   void _loginWithApple(BuildContext context) {
-    // Simuler connexion Apple
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('🍎 Connexion Apple en cours... (Mode démo)'),
-        backgroundColor: Colors.black,
-      ),
+      const SnackBar(content: Text('Connexion Apple en cours...')),
     );
-    
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
-    });
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
+  void _navigateToLogin(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
   }
 }
