@@ -335,18 +335,28 @@ Ce projet est actuellement **propriétaire** et n'accepte pas de contributions e
 
 ## 📄 License
 
-Copyright © 2025 Muscle Master. Tous droits réservés.
+Copyright © 2024-2025 HomeFit Belgium. All Rights Reserved.
 
-Ce code source est propriétaire et confidentiel. Toute reproduction, distribution ou utilisation non autorisée est strictement interdite.
+This code source is proprietary and confidential. Any unauthorized reproduction, distribution, or use is strictly prohibited.
+
+**Important Documents**:
+- [Copyright Notice](./COPYRIGHT.md) - Full copyright and intellectual property information
+- [Privacy Policy](./PRIVACY_POLICY.md) - How we handle your data
+- [Terms of Service](./TERMS_OF_SERVICE.md) - Terms and conditions of use
 
 ---
 
 ## 📞 Contact & Support
 
-Pour toute question ou demande de collaboration :
-- 📧 Email : [contact@musclemaster.app](mailto:contact@musclemaster.app)
-- 🌐 Website : (à venir)
-- 📱 Store : (à venir sur Google Play & App Store)
+For any questions or collaboration requests:
+- 📧 Email : [homefit.belgium@gmail.com](mailto:homefit.belgium@gmail.com)
+- 🌐 Website : (coming soon)
+- 📱 Store : (coming soon on Google Play & App Store)
+
+**Privacy & Legal**:
+- Privacy inquiries: homefit.belgium@gmail.com (Subject: "Privacy Request")
+- Copyright issues: homefit.belgium@gmail.com (Subject: "DMCA Notice")
+- General support: homefit.belgium@gmail.com
 
 ---
 
