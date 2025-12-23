@@ -562,6 +562,100 @@ class DefaultData {
         },
       ],
     },
+    {
+      'id': 'prog_006',
+      'name': 'Force Athlétique',
+      'description': 'Programme powerlifting 4x/semaine axé sur les 3 mouvements de force : squat, bench press, deadlift.',
+      'level': 'Avancé',
+      'goal': 'Force',
+      'durationWeeks': 12,
+      'sessionsPerWeek': 4,
+      'workoutDays': [
+        {
+          'dayName': 'Jour 1 - Squat Focus',
+          'focus': 'Force jambes',
+          'exercises': [
+            {'exerciseId': 'ex_018', 'exerciseName': 'Squat', 'sets': 5, 'reps': '3-5', 'restSeconds': 240, 'notes': 'Charges lourdes'},
+            {'exerciseId': 'ex_020', 'exerciseName': 'Front Squat', 'sets': 4, 'reps': '6-8', 'restSeconds': 180, 'notes': ''},
+            {'exerciseId': 'ex_022', 'exerciseName': 'Leg Press', 'sets': 4, 'reps': '10-12', 'restSeconds': 120, 'notes': ''},
+            {'exerciseId': 'ex_025', 'exerciseName': 'Leg Curl', 'sets': 3, 'reps': '12-15', 'restSeconds': 90, 'notes': ''},
+          ],
+        },
+        {
+          'dayName': 'Jour 2 - Bench Press Focus',
+          'focus': 'Force pectoraux',
+          'exercises': [
+            {'exerciseId': 'ex_001', 'exerciseName': 'Développé couché', 'sets': 5, 'reps': '3-5', 'restSeconds': 240, 'notes': 'Charges lourdes'},
+            {'exerciseId': 'ex_002', 'exerciseName': 'Développé incliné', 'sets': 4, 'reps': '6-8', 'restSeconds': 180, 'notes': ''},
+            {'exerciseId': 'ex_005', 'exerciseName': 'Dips pectoraux', 'sets': 4, 'reps': '8-10', 'restSeconds': 120, 'notes': 'Lesté'},
+            {'exerciseId': 'ex_017', 'exerciseName': 'Extensions triceps', 'sets': 3, 'reps': '10-12', 'restSeconds': 90, 'notes': ''},
+          ],
+        },
+        {
+          'dayName': 'Jour 3 - Deadlift Focus',
+          'focus': 'Force dos',
+          'exercises': [
+            {'exerciseId': 'ex_009', 'exerciseName': 'Soulevé de terre', 'sets': 5, 'reps': '3-5', 'restSeconds': 300, 'notes': 'Charges maximales'},
+            {'exerciseId': 'ex_007', 'exerciseName': 'Rowing barre', 'sets': 4, 'reps': '6-8', 'restSeconds': 180, 'notes': ''},
+            {'exerciseId': 'ex_006', 'exerciseName': 'Tractions', 'sets': 4, 'reps': '8-10', 'restSeconds': 120, 'notes': 'Lesté'},
+            {'exerciseId': 'ex_010', 'exerciseName': 'Pulldown', 'sets': 3, 'reps': '12-15', 'restSeconds': 90, 'notes': ''},
+          ],
+        },
+        {
+          'dayName': 'Jour 4 - Accessoires',
+          'focus': 'Volume hypertrophie',
+          'exercises': [
+            {'exerciseId': 'ex_011', 'exerciseName': 'Développé militaire', 'sets': 4, 'reps': '8-10', 'restSeconds': 120, 'notes': ''},
+            {'exerciseId': 'ex_014', 'exerciseName': 'Curl barre', 'sets': 4, 'reps': '10-12', 'restSeconds': 75, 'notes': ''},
+            {'exerciseId': 'ex_019', 'exerciseName': 'Fentes', 'sets': 3, 'reps': '12-15', 'restSeconds': 90, 'notes': ''},
+            {'exerciseId': 'ex_023', 'exerciseName': 'Planche', 'sets': 3, 'reps': '60s', 'restSeconds': 60, 'notes': ''},
+          ],
+        },
+      ],
+    },
+    {
+      'id': 'prog_007',
+      'name': 'Calisthenics - Poids du Corps',
+      'description': 'Programme 100% poids du corps 3x/semaine. Idéal pour s\'entraîner partout sans équipement.',
+      'level': 'Tous niveaux',
+      'goal': 'Fonctionnel',
+      'durationWeeks': 8,
+      'sessionsPerWeek': 3,
+      'workoutDays': [
+        {
+          'dayName': 'Jour 1 - Push (Poussée)',
+          'focus': 'Pectoraux, épaules, triceps',
+          'exercises': [
+            {'exerciseId': 'ex_003', 'exerciseName': 'Pompes', 'sets': 4, 'reps': 'Max', 'restSeconds': 90, 'notes': 'Variantes possibles'},
+            {'exerciseId': 'ex_003', 'exerciseName': 'Pompes diamant', 'sets': 3, 'reps': 'Max', 'restSeconds': 75, 'notes': 'Focus triceps'},
+            {'exerciseId': 'ex_003', 'exerciseName': 'Pompes déclinées', 'sets': 3, 'reps': 'Max', 'restSeconds': 75, 'notes': 'Pieds surélevés'},
+            {'exerciseId': 'ex_005', 'exerciseName': 'Dips pectoraux', 'sets': 4, 'reps': 'Max', 'restSeconds': 120, 'notes': 'Sur barres parallèles'},
+            {'exerciseId': 'ex_003', 'exerciseName': 'Pike push-ups', 'sets': 3, 'reps': '10-15', 'restSeconds': 90, 'notes': 'Focus épaules'},
+          ],
+        },
+        {
+          'dayName': 'Jour 2 - Pull (Traction)',
+          'focus': 'Dos, biceps',
+          'exercises': [
+            {'exerciseId': 'ex_006', 'exerciseName': 'Tractions', 'sets': 4, 'reps': 'Max', 'restSeconds': 120, 'notes': 'Prise large'},
+            {'exerciseId': 'ex_006', 'exerciseName': 'Tractions prise serrée', 'sets': 3, 'reps': 'Max', 'restSeconds': 90, 'notes': ''},
+            {'exerciseId': 'ex_006', 'exerciseName': 'Australian pull-ups', 'sets': 3, 'reps': '15-20', 'restSeconds': 75, 'notes': 'Barre basse'},
+            {'exerciseId': 'ex_008', 'exerciseName': 'Rowing inversé', 'sets': 4, 'reps': '12-15', 'restSeconds': 90, 'notes': ''},
+          ],
+        },
+        {
+          'dayName': 'Jour 3 - Legs & Core',
+          'focus': 'Jambes et abdominaux',
+          'exercises': [
+            {'exerciseId': 'ex_018', 'exerciseName': 'Squat pistol', 'sets': 3, 'reps': '8-10', 'restSeconds': 120, 'notes': 'Chaque jambe'},
+            {'exerciseId': 'ex_019', 'exerciseName': 'Fentes sautées', 'sets': 4, 'reps': '15-20', 'restSeconds': 90, 'notes': 'Explosif'},
+            {'exerciseId': 'ex_024', 'exerciseName': 'Mountain climbers', 'sets': 4, 'reps': '30s', 'restSeconds': 60, 'notes': 'Haute intensité'},
+            {'exerciseId': 'ex_023', 'exerciseName': 'Planche', 'sets': 3, 'reps': '60s', 'restSeconds': 60, 'notes': ''},
+            {'exerciseId': 'ex_023', 'exerciseName': 'L-sit', 'sets': 3, 'reps': '20-30s', 'restSeconds': 90, 'notes': 'Core avancé'},
+          ],
+        },
+      ],
+    },
   ];
 
   // 30+ Recettes sportives

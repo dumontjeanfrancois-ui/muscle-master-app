@@ -4,7 +4,6 @@ import '../utils/theme.dart';
 import '../main.dart';
 import '../services/vip_service.dart';
 import 'login_screen.dart';
-import 'home_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -357,7 +356,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       const SnackBar(content: Text('Connexion Google en cours...')),
     );
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const MainScreen()),
     );
   }
 
@@ -366,7 +365,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       const SnackBar(content: Text('Connexion Apple en cours...')),
     );
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const MainScreen()),
     );
   }
 
