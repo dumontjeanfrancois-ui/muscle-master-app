@@ -38,15 +38,18 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/muscle-master-release-key.jks
           echo "Keystore decoded successfully"
 
-      - name: 📝 Create key.properties
+            - name: 📝 Create key.properties
         run: |
-          cat > android/key.properties << EOF
+          cat > android/key.properties << 'EOF'
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
           keyAlias=${{ secrets.KEY_ALIAS }}
           storeFile=muscle-master-release-key.jks
           EOF
-          echo "key.properties created"
+          echo "✅ key.properties created"
+          echo "📄 Content verification:"
+          cat android/key.properties
+
 
       - name: 🏗️ Build Release APK (Split per ABI)
         run: flutter build apk --release --split-per-abi
