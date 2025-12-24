@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+
 
 /// Programme personnalisé généré par l'IA
 class AIProgram {

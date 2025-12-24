@@ -25,7 +25,9 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   String? _recordedVideoPath;
   VideoPlayerController? _videoPlayerController;
   final VideoAnalysisService _videoService = VideoAnalysisService();
+  // ignore: unused_field
   final GeminiVisionService _geminiVisionService = GeminiVisionService();
+  // ignore: unused_field
   bool _isAnalyzing = false;
 
   @override

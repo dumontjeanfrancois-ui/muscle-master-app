@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/subscription_service.dart';
-import '../widgets/premium_feature_guard.dart';
+
 import 'paywall_screen.dart';
 
 class AIChefScreen extends StatefulWidget {

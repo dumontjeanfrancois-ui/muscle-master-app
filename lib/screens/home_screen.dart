@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'workout_timer_screen.dart';
-import 'one_rm_calculator_screen.dart';
+
 import 'calculators_screen.dart';
 import 'real_video_analysis_screen.dart';
 import 'nutrition_screen.dart';

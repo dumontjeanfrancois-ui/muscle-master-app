@@ -5,8 +5,7 @@ import '../services/vip_service.dart';
 import 'ai_coach_screen.dart';
 import 'real_video_analysis_screen.dart';
 import 'login_screen.dart';
-import 'welcome_screen.dart';
-import '../services/auth_service.dart';
+
 import 'personal_info_screen.dart';
 import 'goals_screen.dart';
 import 'coach_advice_history_screen.dart';
