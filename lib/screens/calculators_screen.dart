@@ -467,6 +467,8 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
     );
   }
 
+  // Fonction temporairement désactivée
+  // ignore: unused_element
   void _calculate1RM() {
     final weight = double.tryParse(_weightLiftedController.text);
     final reps = int.tryParse(_repsController.text);
@@ -486,6 +488,8 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
     });
   }
 
+  // Widget temporairement désactivé
+  // ignore: unused_element
   Widget _build1RMPercentagesTable() {
     return Container(
       padding: const EdgeInsets.all(16),

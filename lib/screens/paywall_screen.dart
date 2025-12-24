@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+
 import '../services/subscription_service.dart';
 import '../utils/theme.dart';
 

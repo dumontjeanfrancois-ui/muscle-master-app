@@ -23,6 +23,7 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
   int _remainingSeconds = 0;
   Timer? _timer;
   bool _isPaused = false;
+  // ignore: unused_field
   DateTime? _workoutStartTime;
   int _totalWorkoutTime = 0;
 

@@ -18,7 +18,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   
   TimeOfDay _workoutTime = const TimeOfDay(hour: 18, minute: 0);
   TimeOfDay _breakfastTime = const TimeOfDay(hour: 8, minute: 0);
+  // ignore: unused_field
   TimeOfDay _lunchTime = const TimeOfDay(hour: 12, minute: 30);
+  // ignore: unused_field
   TimeOfDay _dinnerTime = const TimeOfDay(hour: 19, minute: 0);
 
   List<String> _selectedDays = ['Lundi', 'Mercredi', 'Vendredi'];
