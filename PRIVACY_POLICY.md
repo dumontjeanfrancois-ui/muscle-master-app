@@ -1,354 +1,180 @@
-# 🔒 PRIVACY POLICY - MUSCLE MASTER
+# Politique de Confidentialité - Muscle Master
 
-**Effective Date**: December 22, 2024  
-**Last Updated**: December 22, 2024
+**Application Fitness par HomeFit Belgium**
+
+**Dernière mise à jour :** 25 décembre 2024
+
+---
+
+## 📋 En résumé
+
+Muscle Master respecte votre vie privée. Nous collectons uniquement les données nécessaires au fonctionnement de l'application et ne les partageons jamais avec des tiers à des fins commerciales.
 
 ---
 
 ## 1. Introduction
 
-Welcome to **Muscle Master**, developed by **HomeFit Belgium** ("we," "our," or "us").
+Bienvenue sur Muscle Master. Cette politique de confidentialité explique comment nous collectons, utilisons, partageons et protégeons vos informations personnelles lorsque vous utilisez notre application mobile de coaching fitness.
 
-This Privacy Policy explains how we collect, use, store, and protect your personal information when you use the Muscle Master mobile application (the "App").
-
-**Developer Information**:
-- **Name**: HomeFit Belgium
-- **Contact Email**: homefit.belgium@gmail.com
-- **Location**: Belgium
-
-By using Muscle Master, you agree to the collection and use of information in accordance with this policy.
+Muscle Master est développé par **HomeFit Belgium** et nous nous engageons à protéger votre vie privée conformément au Règlement Général sur la Protection des Données (RGPD).
 
 ---
 
-## 2. Information We Collect
+## 2. Informations que nous collectons
 
-### 2.1 Information You Provide
+### 2.1. Informations fournies directement par vous
 
-**Account Information**:
-- Email address
-- Display name
-- Profile photo (optional)
-- Date of birth (for age verification)
-- Gender
-- Fitness goals and preferences
+- **Informations de compte :** Email, nom d'utilisateur (si vous créez un compte)
+- **Informations de profil :** Âge, poids, taille, objectifs fitness
+- **Données d'entraînement :** Programmes suivis, exercices effectués, progression
+- **Photos et vidéos :** Photos de progression, vidéos d'exercices (stockées localement et/ou sur Firebase)
+- **Données nutritionnelles :** Préférences alimentaires, recettes favorites
 
-**Fitness Data**:
-- Weight and body measurements
-- Workout history and progress
-- Exercise records and personal records
-- Training program selections
-- Nutrition data and meal logs
+### 2.2. Informations collectées automatiquement
 
-**User-Generated Content**:
-- Workout videos and analysis recordings
-- Progress photos
-- Custom workout programs
-- Notes and comments
+- **Données d'utilisation :** Fonctionnalités utilisées, temps passé dans l'app, fréquence d'utilisation
+- **Données techniques :** Type d'appareil, système d'exploitation, version de l'application
+- **Données de localisation approximative :** Pays/région (pour les statistiques générales uniquement)
+- **Identifiants publicitaires :** Google Advertising ID (pour AdMob, si vous acceptez la publicité)
 
-**Payment Information**:
-- Payment transactions are processed by Google Play / Apple App Store
-- We do not store credit card information
-- We receive only subscription status and transaction IDs
+### 2.3. Informations que nous ne collectons PAS
 
-### 2.2 Automatically Collected Information
-
-**Usage Data**:
-- App features used
-- Session duration and frequency
-- Device type and operating system
-- IP address and general location (country/city)
-- App crashes and performance data
-
-**Device Information**:
-- Device model and manufacturer
-- Operating system version
-- Unique device identifiers
-- Mobile network information
-
-**Camera and Media Access**:
-- Photos and videos for progress tracking
-- Camera access for workout recording
-- Gallery access for selecting images
+- ❌ Données de santé médicales sensibles
+- ❌ Informations de paiement (l'app est gratuite)
+- ❌ Contacts, SMS ou appels téléphoniques
+- ❌ Localisation GPS précise en continu
 
 ---
 
-## 3. How We Use Your Information
+## 3. Comment nous utilisons vos informations
 
-We use collected information for:
+Nous utilisons vos données uniquement pour :
 
-### 3.1 Core Functionality
-- Providing and maintaining the App
-- Creating and managing your account
-- Personalizing workout and nutrition recommendations
-- Tracking your fitness progress
-- Generating AI-powered training programs
-
-### 3.2 AI Features
-- Analyzing workout videos for form correction
-- Generating personalized meal plans
-- Creating custom training programs
-- Analyzing food photos for calorie estimation
-
-### 3.3 Communication
-- Sending important updates and notifications
-- Responding to support requests
-- Sending promotional offers (with consent)
-
-### 3.4 Analytics and Improvements
-- Understanding how users interact with the App
-- Identifying and fixing bugs
-- Improving existing features
-- Developing new features
-
-### 3.5 Legal and Security
-- Preventing fraud and abuse
-- Complying with legal obligations
-- Enforcing our Terms of Service
-- Protecting user safety
+- ✅ **Personnaliser votre expérience :** Programmes d'entraînement adaptés à vos objectifs
+- ✅ **Suivi de progression :** Graphiques, statistiques et historique d'entraînement
+- ✅ **Coach IA :** Conseils personnalisés basés sur vos données
+- ✅ **Synchronisation cloud :** Sauvegarder vos données sur Firebase (si vous êtes connecté)
+- ✅ **Amélioration de l'application :** Analyser les bugs et améliorer les fonctionnalités
+- ✅ **Notifications :** Rappels d'entraînement (si activés)
+- ✅ **Support technique :** Répondre à vos demandes d'assistance
 
 ---
 
-## 4. How We Share Your Information
+## 4. Partage de vos informations
 
-### 4.1 Service Providers
+### 4.1. Nous NE vendons JAMAIS vos données
 
-We share information with trusted third-party services:
+Muscle Master ne vend, ne loue ni n'échange vos informations personnelles à des tiers à des fins commerciales.
 
-**Firebase (Google)**:
-- User authentication
-- Database storage
-- Cloud functions
-- Analytics
-- Privacy Policy: https://firebase.google.com/support/privacy
+### 4.2. Services tiers utilisés
 
-**Google AdMob** (Free version only):
-- Displaying advertisements
-- Ad performance tracking
-- Privacy Policy: https://support.google.com/admob/answer/6128543
+Nous utilisons les services suivants pour le fonctionnement de l'application :
 
-**Google AI (Gemini)**:
-- AI-powered features (workout analysis, meal planning)
-- Privacy Policy: https://ai.google/responsibility/principles/
+- **Firebase (Google) :** Authentification, stockage cloud, base de données
+  - Politique : https://firebase.google.com/support/privacy
+- **Google AdMob :** Affichage de publicités (si vous acceptez)
+  - Politique : https://support.google.com/admob/answer/6128543
+- **Google Gemini AI :** Coach et Chef IA (traitement des requêtes)
+  - Politique : https://ai.google.dev/gemini-api/terms
 
-**In-App Purchase Processors**:
-- Google Play Billing
-- Apple App Store (future)
-
-### 4.2 Legal Requirements
-
-We may disclose information if required by law or in response to:
-- Legal processes (subpoenas, court orders)
-- Government requests
-- Protection of our rights or safety
-- Investigation of potential violations
-
-### 4.3 Business Transfers
-
-In case of merger, acquisition, or sale of assets, user information may be transferred to the new entity.
-
-### 4.4 What We DO NOT Share
-
-- We never sell your personal information
-- We never share your data with data brokers
-- We never use your workout videos for marketing without explicit consent
+**Important :** Ces services tiers peuvent collecter des données selon leurs propres politiques. Nous vous recommandons de les consulter.
 
 ---
 
-## 5. Data Storage and Security
+## 5. Sécurité de vos données
 
-### 5.1 Storage Location
+Nous mettons en œuvre des mesures de sécurité pour protéger vos informations :
 
-Your data is stored on:
-- **Firebase Cloud Firestore** (Google Cloud - EU servers when possible)
-- **Local device storage** (for offline access)
-
-### 5.2 Security Measures
-
-We implement industry-standard security measures:
-- Encrypted data transmission (HTTPS/TLS)
-- Encrypted data storage
-- Secure authentication (Firebase Auth)
-- Regular security audits
-- Access controls and monitoring
-
-### 5.3 Data Retention
-
-- **Active Accounts**: Data retained while account is active
-- **Inactive Accounts**: Data may be deleted after 2 years of inactivity
-- **Deleted Accounts**: Data permanently deleted within 30 days
-- **Legal Requirements**: Some data retained for legal compliance (e.g., payment records)
+- 🔒 **Chiffrement :** Connexions HTTPS, données chiffrées sur Firebase
+- 🔒 **Authentification sécurisée :** Google Sign-In, Apple Sign-In
+- 🔒 **Accès limité :** Seules les personnes autorisées peuvent accéder aux données
+- 🔒 **Stockage sécurisé :** Serveurs Firebase avec certifications de sécurité
+- 🔒 **Surveillance :** Détection et prévention des accès non autorisés
 
 ---
 
-## 6. Your Privacy Rights
+## 6. Vos droits (RGPD)
 
-### 6.1 Access and Control
+Conformément au RGPD, vous disposez des droits suivants :
 
-You have the right to:
-- **Access** your personal data
-- **Export** your data in a portable format
-- **Correct** inaccurate information
-- **Delete** your account and data
-- **Opt-out** of marketing communications
-- **Restrict** processing of your data
+- 📋 **Droit d'accès :** Obtenir une copie de vos données personnelles
+- ✏️ **Droit de rectification :** Corriger des informations inexactes
+- 🗑️ **Droit à l'effacement :** Supprimer votre compte et toutes vos données
+- ⛔ **Droit d'opposition :** Refuser certains traitements de données
+- 📦 **Droit à la portabilité :** Exporter vos données dans un format lisible
+- 🚫 **Droit de retrait du consentement :** Retirer votre consentement à tout moment
 
-### 6.2 How to Exercise Your Rights
+### Comment exercer vos droits
 
-**In-App**:
-- Profile → Settings → Privacy & Data
-- Profile → Settings → Delete Account
+Pour exercer ces droits, contactez-nous à : privacy@musclemaster.app
 
-**Email**:
-- Contact: homefit.belgium@gmail.com
-- Subject: "Privacy Rights Request"
-- Include: Account email and specific request
-
-**Response Time**: We will respond within 30 days
-
-### 6.3 European Union (GDPR) Rights
-
-If you are in the EU, you have additional rights:
-- Right to data portability
-- Right to object to processing
-- Right to withdraw consent
-- Right to lodge a complaint with supervisory authority
-
-### 6.4 California (CCPA) Rights
-
-If you are in California, USA:
-- Right to know what personal information is collected
-- Right to delete personal information
-- Right to opt-out of sale (we don't sell data)
-- Right to non-discrimination
+Nous répondrons dans un délai de **30 jours maximum**.
 
 ---
 
-## 7. Children's Privacy
+## 7. Données des mineurs
 
-Muscle Master is intended for users **13 years and older**.
-
-- We do not knowingly collect data from children under 13
-- If we discover data from a child under 13, we will delete it immediately
-- Parents can contact us to request deletion: homefit.belgium@gmail.com
+Muscle Master est destiné aux personnes âgées de **13 ans et plus**. Nous ne collectons pas sciemment de données d'enfants de moins de 13 ans. Si vous êtes parent et découvrez que votre enfant nous a fourni des informations, contactez-nous immédiatement pour suppression.
 
 ---
 
-## 8. Cookies and Tracking
+## 8. Conservation des données
 
-### 8.1 Technologies Used
-
-- **Firebase Analytics**: App usage and performance
-- **AdMob** (Free version): Ad targeting and delivery
-- **Local Storage**: User preferences and offline data
-
-### 8.2 Your Choices
-
-- Disable analytics: Profile → Settings → Privacy
-- Reset Advertising ID: Device Settings → Privacy → Advertising
-- Clear local data: Uninstall and reinstall app
+- **Compte actif :** Tant que votre compte est actif
+- **Suppression de compte :** 30 jours après demande de suppression
+- **Données de diagnostic :** 90 jours maximum
+- **Données légales :** Durée requise par la loi (comptabilité, taxes)
 
 ---
 
-## 9. International Data Transfers
+## 9. Cookies et technologies similaires
 
-Your information may be transferred to and processed in countries other than Belgium:
-- Firebase servers (EU and worldwide)
-- Google AI services (USA)
+Muscle Master utilise les technologies suivantes :
 
-We ensure appropriate safeguards are in place:
-- Standard Contractual Clauses (SCCs)
-- EU-US Data Privacy Framework compliance
-- Adequate data protection measures
+- **Stockage local :** Préférences de l'application (hors ligne)
+- **Firebase Analytics :** Statistiques d'utilisation anonymisées
+- **AdMob :** Identifiants publicitaires (si publicité acceptée)
 
----
-
-## 10. Premium Subscription Privacy
-
-### 10.1 Premium Features
-
-Premium subscribers benefit from:
-- **No advertisements** (AdMob disabled)
-- **Enhanced privacy** (reduced third-party tracking)
-- **Priority support**
-- **Advanced features**
-
-### 10.2 Payment Privacy
-
-- Payments processed by Google Play / Apple App Store
-- We receive only subscription status (active/cancelled)
-- We do not see payment methods or card details
-- Refunds handled by store policies
+Vous pouvez désactiver les publicités personnalisées dans les paramètres de l'application.
 
 ---
 
-## 11. Third-Party Links
+## 10. Modifications de cette politique
 
-The App may contain links to external websites or services. We are not responsible for their privacy practices. Please review their privacy policies.
+Nous pouvons mettre à jour cette politique de confidentialité occasionnellement. Nous vous informerons des modifications importantes via :
 
----
+- 📧 Notification dans l'application
+- 📧 Email (si vous avez un compte)
+- 📄 Mise à jour de la date en haut de cette page
 
-## 12. Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time. Changes will be notified via:
-- In-app notification
-- Email to registered users
-- Updated "Last Modified" date
-
-Continued use after changes constitutes acceptance of the new policy.
+L'utilisation continue de l'application après ces modifications constitue votre acceptation de la politique mise à jour.
 
 ---
 
-## 13. Contact Us
+## 11. Transferts internationaux de données
 
-For privacy-related questions or concerns:
-
-**Email**: homefit.belgium@gmail.com  
-**Developer**: HomeFit Belgium  
-**Location**: Belgium
-
-**Response Time**: We aim to respond within 48-72 hours
+Vos données peuvent être transférées et stockées sur des serveurs situés en dehors de l'Union Européenne (notamment aux États-Unis via Firebase/Google). Ces transferts sont effectués conformément au RGPD et avec des garanties appropriées (clauses contractuelles types).
 
 ---
 
-## 14. Data Protection Officer
+## 12. Conformité légale
 
-For EU users, you can contact our Data Protection Officer:
-- **Email**: homefit.belgium@gmail.com
-- **Subject**: "DPO - Privacy Inquiry"
+Nous pouvons divulguer vos informations si requis par la loi ou en réponse à des demandes légitimes d'autorités publiques (tribunal, police).
 
 ---
 
-## 15. Supervisory Authority
+## 13. Nous contacter
 
-EU users have the right to lodge a complaint with their local data protection authority:
-- **Belgium**: Commission de la protection de la vie privée / Commissie voor de bescherming van de persoonlijke levenssfeer
-- Website: https://www.privacycommission.be/
+Pour toute question concernant cette politique de confidentialité ou vos données personnelles :
 
----
-
-## Consent
-
-By using Muscle Master, you consent to this Privacy Policy and our Terms of Service.
+**Email :** privacy@musclemaster.app  
+**Support :** support@musclemaster.app  
+**Responsable de la protection des données :** HomeFit Belgium  
+**Adresse :** Brussels, Belgium
 
 ---
 
-**Last Updated**: December 22, 2024  
-**Effective Date**: December 22, 2024  
-**Version**: 1.0
+© 2024 Muscle Master - HomeFit Belgium  
+Tous droits réservés
 
----
-
-## Quick Summary (TL;DR)
-
-- ✅ We collect fitness data to provide personalized features
-- ✅ We use AI to analyze workouts and create meal plans
-- ✅ We use Firebase for secure data storage
-- ✅ Free version shows ads (AdMob), Premium version doesn't
-- ✅ We never sell your personal information
-- ✅ You can access, export, or delete your data anytime
-- ✅ We comply with GDPR, CCPA, and EU privacy laws
-- ✅ Contact us anytime: homefit.belgium@gmail.com
-
----
-
-**HomeFit Belgium** | **Muscle Master** | **Privacy First** 🔒
+[Support](mailto:support@musclemaster.app) | [Confidentialité](mailto:privacy@musclemaster.app)
