@@ -180,7 +180,7 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
                 'COLLER DANS L\'APP',
                 'Revenez dans l\'app, collez le JSON dans le champ ci-dessus et cliquez sur IMPORTER.',
                 Icons.upload,
-                AppTheme.accentOrange,
+                AppTheme.neonOrange,
               ),
               const SizedBox(height: 16),
               Container(
