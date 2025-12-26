@@ -131,6 +131,176 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
     }
   }
 
+  void _showTutorial() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardDark,
+        title: Row(
+          children: [
+            Icon(Icons.help_outline, color: AppTheme.neonBlue),
+            const SizedBox(width: 12),
+            Text(
+              'TUTORIEL IMPORT/EXPORT',
+              style: TextStyle(color: AppTheme.neonBlue, fontSize: 16),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTutorialStep(
+                '1',
+                'TÉLÉCHARGER UN PROGRAMME EXEMPLE',
+                'Téléchargez un des programmes exemples fournis par Muscle Master (voir GitHub ou lien ci-dessous).',
+                Icons.download,
+                AppTheme.neonBlue,
+              ),
+              const SizedBox(height: 16),
+              _buildTutorialStep(
+                '2',
+                'OUVRIR LE FICHIER JSON',
+                'Ouvrez le fichier .json avec n\'importe quel éditeur de texte (Notepad, VS Code, etc.).',
+                Icons.text_snippet,
+                AppTheme.neonPurple,
+              ),
+              const SizedBox(height: 16),
+              _buildTutorialStep(
+                '3',
+                'COPIER TOUT LE CONTENU',
+                'Sélectionnez tout le texte JSON (Ctrl+A) et copiez-le (Ctrl+C).',
+                Icons.copy,
+                AppTheme.neonGreen,
+              ),
+              const SizedBox(height: 16),
+              _buildTutorialStep(
+                '4',
+                'COLLER DANS L\'APP',
+                'Revenez dans l\'app, collez le JSON dans le champ ci-dessus et cliquez sur IMPORTER.',
+                Icons.upload,
+                AppTheme.accentOrange,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.neonGreen.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppTheme.neonGreen.withOpacity(0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.star, color: AppTheme.neonGreen, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'PROGRAMMES EXEMPLES',
+                          style: TextStyle(
+                            color: AppTheme.neonGreen,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Programme-Force-Puissance.json\n• Programme-Debutant-FullBody.json',
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Disponibles sur GitHub :\ngithub.com/dumontjeanfrancois-ui/muscle-master-app',
+                      style: TextStyle(
+                        color: AppTheme.neonBlue,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'COMPRIS !',
+              style: TextStyle(color: AppTheme.neonBlue, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTutorialStep(String number, String title, String description, IconData icon, Color color) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            shape: BoxShape.circle,
+            border: Border.all(color: color),
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: color, size: 16),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final allPrograms = [..._customPrograms, ..._blankPrograms];
@@ -138,6 +308,13 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('IMPORT/EXPORT PROGRAMMES'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: _showTutorial,
+            tooltip: 'Tutoriel Import/Export',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -176,12 +353,29 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    'Collez le code JSON d\'un programme partagé',
-                    style: TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 13,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Collez le code JSON d\'un programme partagé',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: _showTutorial,
+                        icon: Icon(Icons.help_outline, size: 16, color: AppTheme.neonBlue),
+                        label: Text(
+                          'Aide',
+                          style: TextStyle(color: AppTheme.neonBlue, fontSize: 12),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   TextField(

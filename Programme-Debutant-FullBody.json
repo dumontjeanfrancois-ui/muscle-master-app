@@ -1,0 +1,214 @@
+{
+  "name": "Débutant Full Body - 3 Jours",
+  "description": "Programme complet pour débutants. 3 séances par semaine travaillant l'ensemble du corps. Idéal pour apprendre les mouvements de base et construire une base solide.",
+  "difficulty": "Débutant",
+  "duration": "8 semaines",
+  "sessionsPerWeek": 3,
+  "createdBy": "Muscle Master AI Coach",
+  "version": "1.0",
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "focus": "Apprentissage Technique",
+      "sessions": [
+        {
+          "day": "Lundi",
+          "sessionName": "Full Body A",
+          "duration": "45 min",
+          "exercises": [
+            {
+              "name": "Squat",
+              "category": "Jambes",
+              "muscleGroup": "Quadriceps/Fessiers",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "2 min",
+              "notes": "Commencez avec barre à vide",
+              "tips": "Gardez le dos droit, descendez contrôlé"
+            },
+            {
+              "name": "Développé Couché",
+              "category": "Poussée",
+              "muscleGroup": "Pectoraux",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "2 min",
+              "notes": "Barre ou haltères selon confort",
+              "tips": "Contrôlez la descente, poussez fort"
+            },
+            {
+              "name": "Rowing Barre",
+              "category": "Tirage",
+              "muscleGroup": "Dos",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "2 min",
+              "notes": "Penché à 45°",
+              "tips": "Tirez les coudes en arrière"
+            },
+            {
+              "name": "Développé Militaire Haltères",
+              "category": "Épaules",
+              "muscleGroup": "Deltoïdes",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "1 min 30",
+              "notes": "Assis ou debout",
+              "tips": "Montez les haltères au-dessus de la tête"
+            },
+            {
+              "name": "Crunch",
+              "category": "Abdos",
+              "muscleGroup": "Abdominaux",
+              "sets": 3,
+              "reps": "15-20",
+              "rest": "1 min",
+              "notes": "Au sol, mains derrière la tête",
+              "tips": "Contractez les abdos, ne tirez pas sur la nuque"
+            }
+          ]
+        },
+        {
+          "day": "Mercredi",
+          "sessionName": "Full Body B",
+          "duration": "45 min",
+          "exercises": [
+            {
+              "name": "Soulevé de Terre",
+              "category": "Jambes",
+              "muscleGroup": "Dos/Ischio-jambiers",
+              "sets": 3,
+              "reps": "8-10",
+              "rest": "2 min 30",
+              "notes": "Technique parfaite avant d'augmenter",
+              "tips": "Dos droit, poussez les hanches vers l'avant"
+            },
+            {
+              "name": "Développé Incliné Haltères",
+              "category": "Poussée",
+              "muscleGroup": "Pectoraux Haut",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "2 min",
+              "notes": "Banc incliné 30°",
+              "tips": "Amplitude complète"
+            },
+            {
+              "name": "Tractions Assistées",
+              "category": "Tirage",
+              "muscleGroup": "Dos",
+              "sets": 3,
+              "reps": "8-12",
+              "rest": "2 min",
+              "notes": "Machine assistée ou élastique",
+              "tips": "Tirez jusqu'au menton"
+            },
+            {
+              "name": "Élévations Latérales",
+              "category": "Épaules",
+              "muscleGroup": "Deltoïdes Latéraux",
+              "sets": 3,
+              "reps": "12-15",
+              "rest": "1 min 30",
+              "notes": "Haltères légers",
+              "tips": "Levez les coudes, pas les mains"
+            },
+            {
+              "name": "Planche",
+              "category": "Gainage",
+              "muscleGroup": "Core",
+              "sets": 3,
+              "reps": "30-45 sec",
+              "rest": "1 min",
+              "notes": "Position parfaite",
+              "tips": "Corps aligné, fesses ni trop hautes ni trop basses"
+            }
+          ]
+        },
+        {
+          "day": "Vendredi",
+          "sessionName": "Full Body C",
+          "duration": "45 min",
+          "exercises": [
+            {
+              "name": "Presse à Cuisses",
+              "category": "Jambes",
+              "muscleGroup": "Quadriceps",
+              "sets": 3,
+              "reps": "12-15",
+              "rest": "2 min",
+              "notes": "Pieds largeur épaules",
+              "tips": "Descendez jusqu'à 90° au genou"
+            },
+            {
+              "name": "Pompes",
+              "category": "Poussée",
+              "muscleGroup": "Pectoraux",
+              "sets": 3,
+              "reps": "Max",
+              "rest": "2 min",
+              "notes": "Sur genoux si besoin",
+              "tips": "Gardez le corps droit comme une planche"
+            },
+            {
+              "name": "Tirage Horizontal Machine",
+              "category": "Tirage",
+              "muscleGroup": "Dos",
+              "sets": 3,
+              "reps": "12-15",
+              "rest": "2 min",
+              "notes": "Prise neutre ou pronation",
+              "tips": "Tirez les omoplates en arrière"
+            },
+            {
+              "name": "Curl Barre",
+              "category": "Biceps",
+              "muscleGroup": "Biceps",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "1 min 30",
+              "notes": "Barre droite ou EZ",
+              "tips": "Coudes fixes, pas de balancement"
+            },
+            {
+              "name": "Extension Triceps Poulie",
+              "category": "Triceps",
+              "muscleGroup": "Triceps",
+              "sets": 3,
+              "reps": "12-15",
+              "rest": "1 min 30",
+              "notes": "Corde ou barre",
+              "tips": "Gardez les coudes serrés"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nutritionGuidelines": {
+    "calories": "Maintenance ou léger surplus (+200 kcal)",
+    "protein": "1.6-2g par kg de poids corporel",
+    "carbs": "3-4g par kg",
+    "fats": "0.8-1g par kg",
+    "hydration": "2-3L d'eau par jour",
+    "supplements": [
+      "Whey protéine (optionnel, si apport protéines insuffisant)",
+      "Créatine (optionnel, après 4 semaines)"
+    ]
+  },
+  "tips": [
+    "🎯 Concentrez-vous sur la TECHNIQUE avant la charge",
+    "📊 Augmentez progressivement (1-2kg par semaine max)",
+    "😴 Récupération = Progrès. Dormez 8h minimum",
+    "🍖 Mangez suffisamment de protéines à chaque repas",
+    "💧 Hydratez-vous tout au long de la journée",
+    "📝 Notez vos performances pour suivre votre progression",
+    "⏱️ Prenez votre temps entre les séries"
+  ],
+  "progressionPlan": {
+    "week1-2": "Apprentissage des mouvements - Charges légères",
+    "week3-4": "Augmentation progressive des charges",
+    "week5-6": "Intensification - Ajout de poids régulier",
+    "week7-8": "Consolidation - Perfectionnement technique"
+  }
+}

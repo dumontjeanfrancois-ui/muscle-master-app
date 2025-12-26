@@ -1,0 +1,272 @@
+{
+  "name": "Force et Puissance - Programme Complet",
+  "description": "Programme intensif de 4 semaines pour développer la force maximale et la puissance explosive. Idéal pour les athlètes intermédiaires et avancés.",
+  "difficulty": "Intermédiaire",
+  "duration": "4 semaines",
+  "sessionsPerWeek": 4,
+  "createdBy": "Muscle Master AI Coach",
+  "version": "1.0",
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "focus": "Adaptation et Technique",
+      "sessions": [
+        {
+          "day": "Lundi",
+          "sessionName": "Séance 1 - Poussée Supérieure",
+          "duration": "60 min",
+          "exercises": [
+            {
+              "name": "Développé Couché",
+              "category": "Force",
+              "muscleGroup": "Pectoraux",
+              "sets": 5,
+              "reps": "5",
+              "rest": "3 min",
+              "notes": "75-80% de votre 1RM. Focus sur la technique et l'explosivité.",
+              "tips": "Descendez lentement (3 sec), poussez explosif"
+            },
+            {
+              "name": "Développé Incliné Haltères",
+              "category": "Force",
+              "muscleGroup": "Pectoraux Haut",
+              "sets": 4,
+              "reps": "6-8",
+              "rest": "2 min 30",
+              "notes": "Inclinaison 30-45°",
+              "tips": "Gardez les coudes à 45° du corps"
+            },
+            {
+              "name": "Développé Militaire",
+              "category": "Force",
+              "muscleGroup": "Épaules",
+              "sets": 4,
+              "reps": "6",
+              "rest": "2 min 30",
+              "notes": "Debout, barre devant",
+              "tips": "Gainage constant, ne cambrez pas le dos"
+            },
+            {
+              "name": "Dips Lestés",
+              "category": "Force",
+              "muscleGroup": "Triceps/Pectoraux",
+              "sets": 3,
+              "reps": "8-10",
+              "rest": "2 min",
+              "notes": "Ajoutez du poids si possible",
+              "tips": "Descendez jusqu'à 90° au coude"
+            },
+            {
+              "name": "Triceps Barre au Front",
+              "category": "Hypertrophie",
+              "muscleGroup": "Triceps",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "1 min 30",
+              "notes": "Exercice de finition",
+              "tips": "Gardez les coudes fixes"
+            }
+          ]
+        },
+        {
+          "day": "Mercredi",
+          "sessionName": "Séance 2 - Tirage Supérieur",
+          "duration": "60 min",
+          "exercises": [
+            {
+              "name": "Tractions Lestées",
+              "category": "Force",
+              "muscleGroup": "Dos",
+              "sets": 5,
+              "reps": "5",
+              "rest": "3 min",
+              "notes": "Ajoutez du poids pour rester à 5 reps",
+              "tips": "Prise large, tirez les coudes vers le bas"
+            },
+            {
+              "name": "Rowing Barre",
+              "category": "Force",
+              "muscleGroup": "Dos",
+              "sets": 4,
+              "reps": "6",
+              "rest": "2 min 30",
+              "notes": "Penché à 45°, prise pronation",
+              "tips": "Tirez vers le nombril, contractez les omoplates"
+            },
+            {
+              "name": "Rowing Haltère Unilatéral",
+              "category": "Force",
+              "muscleGroup": "Dos",
+              "sets": 4,
+              "reps": "8 par bras",
+              "rest": "2 min",
+              "notes": "Bras alternés",
+              "tips": "Rotation du torse pour amplifier le mouvement"
+            },
+            {
+              "name": "Curl Barre",
+              "category": "Hypertrophie",
+              "muscleGroup": "Biceps",
+              "sets": 4,
+              "reps": "8-10",
+              "rest": "1 min 30",
+              "notes": "Barre EZ ou droite",
+              "tips": "Coudes fixes, pas de balancement"
+            },
+            {
+              "name": "Face Pull",
+              "category": "Prévention",
+              "muscleGroup": "Deltoïdes Postérieurs",
+              "sets": 3,
+              "reps": "15-20",
+              "rest": "1 min",
+              "notes": "Câble à hauteur du visage",
+              "tips": "Écartez les mains en fin de mouvement"
+            }
+          ]
+        },
+        {
+          "day": "Vendredi",
+          "sessionName": "Séance 3 - Jambes Force",
+          "duration": "70 min",
+          "exercises": [
+            {
+              "name": "Squat Back",
+              "category": "Force",
+              "muscleGroup": "Quadriceps/Fessiers",
+              "sets": 5,
+              "reps": "5",
+              "rest": "3 min",
+              "notes": "75-80% 1RM. Barre haute ou basse selon morphologie",
+              "tips": "Descendez jusqu'à parallèle minimum"
+            },
+            {
+              "name": "Soulevé de Terre Roumain",
+              "category": "Force",
+              "muscleGroup": "Ischio-jambiers",
+              "sets": 4,
+              "reps": "6-8",
+              "rest": "2 min 30",
+              "notes": "Jambes légèrement fléchies",
+              "tips": "Poussez les hanches en arrière, dos droit"
+            },
+            {
+              "name": "Presse à Cuisses",
+              "category": "Force",
+              "muscleGroup": "Quadriceps",
+              "sets": 4,
+              "reps": "8-10",
+              "rest": "2 min",
+              "notes": "Pieds écartés largeur épaules",
+              "tips": "Descendez jusqu'à 90° au genou"
+            },
+            {
+              "name": "Leg Curl",
+              "category": "Hypertrophie",
+              "muscleGroup": "Ischio-jambiers",
+              "sets": 3,
+              "reps": "10-12",
+              "rest": "1 min 30",
+              "notes": "Machine allongé ou assis",
+              "tips": "Contraction maximale en haut"
+            },
+            {
+              "name": "Mollets Debout",
+              "category": "Hypertrophie",
+              "muscleGroup": "Mollets",
+              "sets": 4,
+              "reps": "15-20",
+              "rest": "1 min",
+              "notes": "Machine à mollets",
+              "tips": "Amplitude complète, pause en haut"
+            }
+          ]
+        },
+        {
+          "day": "Samedi",
+          "sessionName": "Séance 4 - Explosivité & Accessoires",
+          "duration": "50 min",
+          "exercises": [
+            {
+              "name": "Power Clean",
+              "category": "Puissance",
+              "muscleGroup": "Corps Entier",
+              "sets": 5,
+              "reps": "3",
+              "rest": "2 min 30",
+              "notes": "60-70% 1RM Clean. Focus vitesse",
+              "tips": "Mouvement explosif des hanches"
+            },
+            {
+              "name": "Développé Incliné Explosif",
+              "category": "Puissance",
+              "muscleGroup": "Pectoraux",
+              "sets": 4,
+              "reps": "5",
+              "rest": "2 min",
+              "notes": "60% 1RM, poussée explosive",
+              "tips": "Descendez contrôlé, poussez explosif"
+            },
+            {
+              "name": "Box Jump",
+              "category": "Pliométrie",
+              "muscleGroup": "Jambes",
+              "sets": 4,
+              "reps": "6",
+              "rest": "2 min",
+              "notes": "Hauteur adaptée à votre niveau",
+              "tips": "Atterrissage souple, réception contrôlée"
+            },
+            {
+              "name": "Planche",
+              "category": "Gainage",
+              "muscleGroup": "Abdominaux",
+              "sets": 3,
+              "reps": "60 sec",
+              "rest": "1 min",
+              "notes": "Position parfaite",
+              "tips": "Corps aligné, gainage total"
+            },
+            {
+              "name": "Russian Twist",
+              "category": "Gainage",
+              "muscleGroup": "Obliques",
+              "sets": 3,
+              "reps": "20 par côté",
+              "rest": "1 min",
+              "notes": "Avec poids si possible",
+              "tips": "Rotation complète du torse"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nutritionGuidelines": {
+    "calories": "+300-500 kcal surplus",
+    "protein": "2g par kg de poids corporel",
+    "carbs": "4-5g par kg (focus pré/post training)",
+    "fats": "1g par kg",
+    "hydration": "3-4L d'eau par jour",
+    "supplements": [
+      "Créatine monohydrate (5g/jour)",
+      "Whey protéine (post-training)",
+      "BCAA (pendant training si à jeun)"
+    ]
+  },
+  "tips": [
+    "💪 Échauffez-vous 10 min avant chaque séance (mobilité + cardio léger)",
+    "📊 Augmentez les charges de 2.5-5kg chaque semaine si possible",
+    "😴 Dormez 7-9h par nuit pour optimiser la récupération",
+    "🍖 Mangez suffisamment de protéines (viande, poisson, œufs, whey)",
+    "📝 Notez vos performances pour suivre votre progression",
+    "⚡ Prenez 1-2 jours de repos complet par semaine",
+    "🔥 La qualité d'exécution prime sur la charge"
+  ],
+  "progressionPlan": {
+    "week1": "Phase d'adaptation - 75% 1RM",
+    "week2": "Augmentation volume - 80% 1RM",
+    "week3": "Pic d'intensité - 85% 1RM",
+    "week4": "Décharge - 70% 1RM (récupération active)"
+  }
+}
