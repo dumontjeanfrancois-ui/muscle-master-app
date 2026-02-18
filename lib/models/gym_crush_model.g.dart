@@ -63,13 +63,15 @@ class GymCrushUserAdapter extends TypeAdapter<GymCrushUser> {
       mascotName: fields[3] as String?,
       lastActivity: fields[4] as DateTime,
       gymId: fields[5] as String?,
+      isActive: fields[6] as bool,
+      expiresAt: fields[7] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, GymCrushUser obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -81,7 +83,11 @@ class GymCrushUserAdapter extends TypeAdapter<GymCrushUser> {
       ..writeByte(4)
       ..write(obj.lastActivity)
       ..writeByte(5)
-      ..write(obj.gymId);
+      ..write(obj.gymId)
+      ..writeByte(6)
+      ..write(obj.isActive)
+      ..writeByte(7)
+      ..write(obj.expiresAt);
   }
 
   @override

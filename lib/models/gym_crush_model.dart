@@ -74,13 +74,21 @@ class GymCrushUser {
   @HiveField(3)
   final String? mascotName;
 
-  /// Timestamp dernière activité (pour détecter fin d'entraînement)
+  /// Timestamp dernière activité (pour heartbeat)
   @HiveField(4)
   final DateTime lastActivity;
 
   /// Salle de sport (ID ou nom anonymisé)
   @HiveField(5)
   final String? gymId;
+
+  /// Présence active (pour filtrage temps réel)
+  @HiveField(6)
+  final bool isActive;
+
+  /// Date d'expiration de la présence (heartbeat)
+  @HiveField(7)
+  final DateTime expiresAt;
 
   GymCrushUser({
     required this.userId,
@@ -89,6 +97,8 @@ class GymCrushUser {
     this.mascotName,
     required this.lastActivity,
     this.gymId,
+    this.isActive = true,
+    required this.expiresAt,
   });
 
   Map<String, dynamic> toFirestore() {
@@ -99,6 +109,8 @@ class GymCrushUser {
       'mascotName': mascotName,
       'lastActivity': lastActivity.toIso8601String(),
       'gymId': gymId,
+      'isActive': isActive,
+      'expiresAt': expiresAt.toIso8601String(),
     };
   }
 
@@ -110,6 +122,10 @@ class GymCrushUser {
       mascotName: data['mascotName'] as String?,
       lastActivity: DateTime.parse(data['lastActivity'] as String),
       gymId: data['gymId'] as String?,
+      isActive: data['isActive'] as bool? ?? true,
+      expiresAt: data['expiresAt'] != null
+          ? DateTime.parse(data['expiresAt'] as String)
+          : DateTime.now().add(const Duration(minutes: 2)),
     );
   }
 }

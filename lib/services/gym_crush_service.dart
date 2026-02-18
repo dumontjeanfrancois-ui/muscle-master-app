@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +14,8 @@ class GymCrushService {
   
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  static Timer? _heartbeatTimer;
 
   static Future<void> initialize() async {
     if (!Hive.isBoxOpen(_settingsBoxName)) {
@@ -57,7 +60,7 @@ class GymCrushService {
     await _settingsBox!.put('current', updatedSettings);
 
     if (!enabled) {
-      await _removeUserPresence();
+      await deactivatePresence();
     }
   }
 
@@ -77,21 +80,105 @@ class GymCrushService {
     if (userId == null) return;
 
     try {
+      final now = DateTime.now();
+      final expiresAt = now.add(const Duration(minutes: 2));
+
       final user = GymCrushUser(
         userId: userId,
         pseudo: pseudo,
         mascotType: mascotType,
         mascotName: mascotName,
-        lastActivity: DateTime.now(),
+        lastActivity: now,
         gymId: gymId,
+        isActive: true,
+        expiresAt: expiresAt,
       );
 
       await _firestore
           .collection('gym_crush_presence')
           .doc(userId)
           .set(user.toFirestore(), SetOptions(merge: true));
+
+      debugPrint('✅ GymCrush: Présence mise à jour (expire à ${expiresAt.toIso8601String()})');
     } catch (e) {
       debugPrint('❌ GymCrush: Erreur mise à jour présence: $e');
+    }
+  }
+
+  static Future<void> startPresenceHeartbeat({
+    required String pseudo,
+    required String mascotType,
+    String? mascotName,
+    String? gymId,
+  }) async {
+    stopPresenceHeartbeat();
+
+    await updateUserPresence(
+      pseudo: pseudo,
+      mascotType: mascotType,
+      mascotName: mascotName,
+      gymId: gymId,
+    );
+
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      if (!isGymCrushEnabled()) {
+        stopPresenceHeartbeat();
+        return;
+      }
+
+      final userId = _getCurrentUserId();
+      if (userId == null) {
+        stopPresenceHeartbeat();
+        return;
+      }
+
+      try {
+        final now = DateTime.now();
+        final expiresAt = now.add(const Duration(minutes: 2));
+
+        await _firestore
+            .collection('gym_crush_presence')
+            .doc(userId)
+            .update({
+          'lastActivity': now.toIso8601String(),
+          'expiresAt': expiresAt.toIso8601String(),
+          'isActive': true,
+        });
+
+        debugPrint('💓 GymCrush: Heartbeat envoyé (expire à ${expiresAt.toIso8601String()})');
+      } catch (e) {
+        debugPrint('❌ GymCrush: Erreur heartbeat: $e');
+      }
+    });
+
+    debugPrint('✅ GymCrush: Heartbeat démarré (30s)');
+  }
+
+  static void stopPresenceHeartbeat() {
+    if (_heartbeatTimer != null) {
+      _heartbeatTimer!.cancel();
+      _heartbeatTimer = null;
+      debugPrint('🛑 GymCrush: Heartbeat arrêté');
+    }
+  }
+
+  static Future<void> deactivatePresence() async {
+    stopPresenceHeartbeat();
+
+    final userId = _getCurrentUserId();
+    if (userId == null) return;
+
+    try {
+      await _firestore
+          .collection('gym_crush_presence')
+          .doc(userId)
+          .update({
+        'isActive': false,
+        'expiresAt': DateTime.now().toIso8601String(),
+      });
+      debugPrint('✅ GymCrush: Présence désactivée pour $userId');
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur désactivation présence: $e');
     }
   }
 
@@ -118,14 +205,13 @@ class GymCrushService {
     if (currentUserId == null) return [];
 
     try {
-      final timeWindow = Timestamp.fromDate(
-        DateTime.now().subtract(const Duration(minutes: 15)),
-      );
+      final now = Timestamp.now();
 
       final querySnapshot = await _firestore
           .collection('gym_crush_presence')
           .where('gymId', isEqualTo: currentGymId)
-          .where('lastActivity', isGreaterThan: timeWindow)
+          .where('isActive', isEqualTo: true)
+          .where('expiresAt', isGreaterThan: now)
           .get();
 
       final users = querySnapshot.docs
@@ -143,10 +229,54 @@ class GymCrushService {
         }
       }
 
+      debugPrint('✅ GymCrush: ${filteredUsers.length} utilisateurs détectés');
       return filteredUsers;
     } catch (e) {
       debugPrint('❌ GymCrush: Erreur détection utilisateurs: $e');
       return [];
+    }
+  }
+
+  static Stream<List<GymCrushUser>> listenNearbyUsers({
+    required String? currentGymId,
+  }) {
+    if (!isGymCrushEnabled() || currentGymId == null) {
+      return Stream.value([]);
+    }
+
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return Stream.value([]);
+
+    try {
+      final now = Timestamp.now();
+
+      return _firestore
+          .collection('gym_crush_presence')
+          .where('gymId', isEqualTo: currentGymId)
+          .where('isActive', isEqualTo: true)
+          .where('expiresAt', isGreaterThan: now)
+          .snapshots()
+          .asyncMap((snapshot) async {
+        final users = snapshot.docs
+            .map((doc) => GymCrushUser.fromFirestore(doc.data()))
+            .where((user) => user.userId != currentUserId)
+            .toList();
+
+        final filteredUsers = <GymCrushUser>[];
+        for (final user in users) {
+          final interaction = await _getInteraction(user.userId);
+          if (interaction == null ||
+              (interaction.status != GymCrushStatus.ignored &&
+                  interaction.status != GymCrushStatus.blocked)) {
+            filteredUsers.add(user);
+          }
+        }
+
+        return filteredUsers;
+      });
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur stream utilisateurs: $e');
+      return Stream.value([]);
     }
   }
 
@@ -363,6 +493,8 @@ class GymCrushService {
   }
 
   static Future<void> dispose() async {
+    stopPresenceHeartbeat();
+    
     if (_settingsBox != null && _settingsBox!.isOpen) {
       await _settingsBox!.close();
     }
