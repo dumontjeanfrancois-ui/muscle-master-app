@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/gym_crush_model.dart';
 
-/// Service de gestion du module social Gym Crush
-/// Module activable/désactivable pour rencontres dans la salle de sport
 class GymCrushService {
   static const String _settingsBoxName = 'gymCrushSettings';
   static const String _interactionsBoxName = 'gymCrushInteractions';
@@ -13,8 +12,8 @@ class GymCrushService {
   static Box<GymCrushInteraction>? _interactionsBox;
   
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Initialiser le service Hive
   static Future<void> initialize() async {
     if (!Hive.isBoxOpen(_settingsBoxName)) {
       _settingsBox = await Hive.openBox<GymCrushSettings>(_settingsBoxName);
@@ -29,7 +28,15 @@ class GymCrushService {
     }
   }
 
-  /// Obtenir les paramètres Gym Crush
+  static String? _getCurrentUserId() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      debugPrint('❌ GymCrush: Aucun utilisateur Firebase connecté');
+      return null;
+    }
+    return user.uid;
+  }
+
   static GymCrushSettings getSettings() {
     if (_settingsBox == null) {
       throw Exception('GymCrushService not initialized');
@@ -44,33 +51,30 @@ class GymCrushService {
     return _settingsBox!.get('current', defaultValue: GymCrushSettings())!;
   }
 
-  /// Activer/Désactiver le mode Gym Crush
   static Future<void> toggleGymCrushMode(bool enabled) async {
     final currentSettings = getSettings();
     final updatedSettings = currentSettings.copyWith(isEnabled: enabled);
     await _settingsBox!.put('current', updatedSettings);
 
-    // Si désactivation, supprimer présence Firestore
     if (!enabled) {
       await _removeUserPresence();
     }
   }
 
-  /// Vérifier si le mode Gym Crush est activé
   static bool isGymCrushEnabled() {
     return getSettings().isEnabled;
   }
 
-  /// Mettre à jour la présence utilisateur dans Firestore
-  /// (Appelé quand l'utilisateur est en entraînement actif)
   static Future<void> updateUserPresence({
-    required String userId,
     required String pseudo,
     required String mascotType,
     String? mascotName,
     String? gymId,
   }) async {
     if (!isGymCrushEnabled()) return;
+
+    final userId = _getCurrentUserId();
+    if (userId == null) return;
 
     try {
       final user = GymCrushUser(
@@ -87,44 +91,48 @@ class GymCrushService {
           .doc(userId)
           .set(user.toFirestore(), SetOptions(merge: true));
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Erreur mise à jour présence Gym Crush: $e');
-      }
+      debugPrint('❌ GymCrush: Erreur mise à jour présence: $e');
     }
   }
 
-  /// Supprimer la présence utilisateur
   static Future<void> _removeUserPresence() async {
-    // Implémenter selon le userId actuel
-    // await _firestore.collection('gym_crush_presence').doc(userId).delete();
+    final userId = _getCurrentUserId();
+    if (userId == null) return;
+
+    try {
+      await _firestore.collection('gym_crush_presence').doc(userId).delete();
+      debugPrint('✅ GymCrush: Présence supprimée pour $userId');
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur suppression présence: $e');
+    }
   }
 
-  /// Détecter les utilisateurs proches
-  /// Critères: même salle, fin d'entraînement proche (±15 min), non ignoré/bloqué
   static Future<List<GymCrushUser>> detectNearbyUsers({
-    required String currentUserId,
     required String? currentGymId,
   }) async {
     if (!isGymCrushEnabled() || currentGymId == null) {
       return [];
     }
 
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return [];
+
     try {
-      final now = DateTime.now();
-      final timeWindow = now.subtract(const Duration(minutes: 15));
+      final timeWindow = Timestamp.fromDate(
+        DateTime.now().subtract(const Duration(minutes: 15)),
+      );
 
       final querySnapshot = await _firestore
           .collection('gym_crush_presence')
           .where('gymId', isEqualTo: currentGymId)
-          .where('lastActivity', isGreaterThan: timeWindow.toIso8601String())
+          .where('lastActivity', isGreaterThan: timeWindow)
           .get();
 
       final users = querySnapshot.docs
           .map((doc) => GymCrushUser.fromFirestore(doc.data()))
-          .where((user) => user.userId != currentUserId) // Exclure soi-même
+          .where((user) => user.userId != currentUserId)
           .toList();
 
-      // Filtrer utilisateurs déjà ignorés/bloqués
       final filteredUsers = <GymCrushUser>[];
       for (final user in users) {
         final interaction = await _getInteraction(user.userId);
@@ -137,19 +145,18 @@ class GymCrushService {
 
       return filteredUsers;
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Erreur détection utilisateurs: $e');
-      }
+      debugPrint('❌ GymCrush: Erreur détection utilisateurs: $e');
       return [];
     }
   }
 
-  /// Créer une interaction Gym Crush
-  static Future<GymCrushInteraction> createInteraction({
-    required String currentUserId,
+  static Future<GymCrushInteraction?> createInteraction({
     required GymCrushUser targetUser,
     required GymCrushStatus status,
   }) async {
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return null;
+
     final interactionId = '${currentUserId}_${targetUser.userId}';
     
     final interaction = GymCrushInteraction(
@@ -162,26 +169,27 @@ class GymCrushService {
       updatedAt: DateTime.now(),
     );
 
-    // Sauvegarder localement
-    await _interactionsBox!.put(interactionId, interaction);
+    try {
+      await _interactionsBox!.put(interactionId, interaction);
 
-    // Sauvegarder dans Firestore
-    await _firestore
-        .collection('gym_crush_interactions')
-        .doc(currentUserId)
-        .collection('interactions')
-        .doc(targetUser.userId)
-        .set(interaction.toFirestore());
+      await _firestore
+          .collection('gym_crush_interactions')
+          .doc(currentUserId)
+          .collection('interactions')
+          .doc(targetUser.userId)
+          .set(interaction.toFirestore());
 
-    // Vérifier mutualité si gym crush
-    if (status == GymCrushStatus.pending) {
-      await _checkMutualCrush(currentUserId, targetUser.userId, interaction);
+      if (status == GymCrushStatus.pending) {
+        await _checkMutualCrush(currentUserId, targetUser.userId, interaction);
+      }
+
+      return interaction;
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur création interaction: $e');
+      return null;
     }
-
-    return interaction;
   }
 
-  /// Vérifier si gym crush mutuel
   static Future<void> _checkMutualCrush(
     String currentUserId,
     String targetUserId,
@@ -199,21 +207,19 @@ class GymCrushService {
         final targetInteraction = GymCrushInteraction.fromFirestore(targetDoc.data()!);
         
         if (targetInteraction.status == GymCrushStatus.pending) {
-          // Mutuel ! Débloquer le chat
           await _unlockChat(currentUserId, targetUserId);
+          debugPrint('✅ GymCrush: Match mutuel détecté!');
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Erreur vérification mutualité: $e');
-      }
+      debugPrint('❌ GymCrush: Erreur vérification mutualité: $e');
     }
   }
 
-  /// Débloquer le chat (gym crush mutuel)
   static Future<void> _unlockChat(String userId1, String userId2) async {
     try {
-      // Mettre à jour les deux côtés
+      final now = Timestamp.now();
+
       await _firestore
           .collection('gym_crush_interactions')
           .doc(userId1)
@@ -222,7 +228,7 @@ class GymCrushService {
           .update({
         'status': GymCrushStatus.mutual.toString().split('.').last,
         'chatUnlocked': true,
-        'updatedAt': DateTime.now().toIso8601String(),
+        'updatedAt': now,
       });
 
       await _firestore
@@ -233,10 +239,9 @@ class GymCrushService {
           .update({
         'status': GymCrushStatus.mutual.toString().split('.').last,
         'chatUnlocked': true,
-        'updatedAt': DateTime.now().toIso8601String(),
+        'updatedAt': now,
       });
 
-      // Mettre à jour localement
       final interactionId = '${userId1}_$userId2';
       final localInteraction = _interactionsBox!.get(interactionId);
       if (localInteraction != null) {
@@ -248,68 +253,82 @@ class GymCrushService {
         await _interactionsBox!.put(interactionId, updated);
       }
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ Erreur déblocage chat: $e');
-      }
+      debugPrint('❌ GymCrush: Erreur déblocage chat: $e');
     }
   }
 
-  /// Obtenir une interaction existante
   static Future<GymCrushInteraction?> _getInteraction(String targetUserId) async {
-    final interactionId = 'currentUserId_$targetUserId'; // À remplacer par vrai userId
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return null;
+
+    final interactionId = '${currentUserId}_$targetUserId';
     return _interactionsBox!.get(interactionId);
   }
 
-  /// Ignorer un utilisateur
-  static Future<void> ignoreUser(String currentUserId, String targetUserId) async {
+  static Future<void> ignoreUser(String targetUserId) async {
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return;
+
     final interactionId = '${currentUserId}_$targetUserId';
     final existing = _interactionsBox!.get(interactionId);
     
-    if (existing != null) {
-      final updated = existing.copyWith(
-        status: GymCrushStatus.ignored,
-        updatedAt: DateTime.now(),
-      );
-      await _interactionsBox!.put(interactionId, updated);
-    }
+    try {
+      if (existing != null) {
+        final updated = existing.copyWith(
+          status: GymCrushStatus.ignored,
+          updatedAt: DateTime.now(),
+        );
+        await _interactionsBox!.put(interactionId, updated);
+      }
 
-    await _firestore
-        .collection('gym_crush_interactions')
-        .doc(currentUserId)
-        .collection('interactions')
-        .doc(targetUserId)
-        .update({
-      'status': GymCrushStatus.ignored.toString().split('.').last,
-      'updatedAt': DateTime.now().toIso8601String(),
-    });
+      await _firestore
+          .collection('gym_crush_interactions')
+          .doc(currentUserId)
+          .collection('interactions')
+          .doc(targetUserId)
+          .update({
+        'status': GymCrushStatus.ignored.toString().split('.').last,
+        'updatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur ignore user: $e');
+    }
   }
 
-  /// Bloquer un utilisateur
-  static Future<void> blockUser(String currentUserId, String targetUserId) async {
+  static Future<void> blockUser(String targetUserId) async {
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return;
+
     final interactionId = '${currentUserId}_$targetUserId';
     final existing = _interactionsBox!.get(interactionId);
     
-    if (existing != null) {
-      final updated = existing.copyWith(
-        status: GymCrushStatus.blocked,
-        updatedAt: DateTime.now(),
-      );
-      await _interactionsBox!.put(interactionId, updated);
-    }
+    try {
+      if (existing != null) {
+        final updated = existing.copyWith(
+          status: GymCrushStatus.blocked,
+          updatedAt: DateTime.now(),
+        );
+        await _interactionsBox!.put(interactionId, updated);
+      }
 
-    await _firestore
-        .collection('gym_crush_interactions')
-        .doc(currentUserId)
-        .collection('interactions')
-        .doc(targetUserId)
-        .set({
-      'status': GymCrushStatus.blocked.toString().split('.').last,
-      'updatedAt': DateTime.now().toIso8601String(),
-    }, SetOptions(merge: true));
+      await _firestore
+          .collection('gym_crush_interactions')
+          .doc(currentUserId)
+          .collection('interactions')
+          .doc(targetUserId)
+          .set({
+        'status': GymCrushStatus.blocked.toString().split('.').last,
+        'updatedAt': Timestamp.now(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur block user: $e');
+    }
   }
 
-  /// Obtenir le nombre de gym crush actifs
-  static Future<int> getActiveCrushesCount(String currentUserId) async {
+  static Future<int> getActiveCrushesCount() async {
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return 0;
+
     try {
       final querySnapshot = await _firestore
           .collection('gym_crush_interactions')
@@ -320,23 +339,29 @@ class GymCrushService {
       
       return querySnapshot.docs.length;
     } catch (e) {
+      debugPrint('❌ GymCrush: Erreur count crushes: $e');
       return 0;
     }
   }
 
-  /// Vérifier si la limite de gym crush est atteinte
-  static Future<bool> canCreateNewCrush(String currentUserId) async {
+  static Future<bool> canCreateNewCrush() async {
     final settings = getSettings();
-    final currentCount = await getActiveCrushesCount(currentUserId);
+    final currentCount = await getActiveCrushesCount();
     return currentCount < settings.maxActiveCrushes;
   }
 
-  /// Obtenir toutes les interactions
   static Future<List<GymCrushInteraction>> getAllInteractions() async {
-    return _interactionsBox!.values.toList();
+    final currentUserId = _getCurrentUserId();
+    if (currentUserId == null) return [];
+
+    try {
+      return _interactionsBox!.values.toList();
+    } catch (e) {
+      debugPrint('❌ GymCrush: Erreur get interactions: $e');
+      return [];
+    }
   }
 
-  /// Fermer les boxes Hive
   static Future<void> dispose() async {
     if (_settingsBox != null && _settingsBox!.isOpen) {
       await _settingsBox!.close();

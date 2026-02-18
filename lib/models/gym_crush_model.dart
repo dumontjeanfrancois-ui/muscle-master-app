@@ -16,7 +16,7 @@ class GymCrushSettings extends HiveObject {
 
   /// Nombre maximum de gym crush actifs
   @HiveField(2)
-  int maxActiveC rushes;
+  int maxActiveCrushes;
 
   GymCrushSettings({
     this.isEnabled = false, // Désactivé par défaut

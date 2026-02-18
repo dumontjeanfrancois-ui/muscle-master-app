@@ -61,7 +61,6 @@ class _GymCrushBottomSheetState extends State<GymCrushBottomSheet>
 
     try {
       await GymCrushService.createInteraction(
-        currentUserId: widget.currentUserId,
         targetUser: widget.user,
         status: status,
       );
@@ -97,8 +96,7 @@ class _GymCrushBottomSheetState extends State<GymCrushBottomSheet>
   }
 
   Future<void> _handleGymCrush() async {
-    // Vérifier la limite
-    final canCreate = await GymCrushService.canCreateNewCrush(widget.currentUserId);
+    final canCreate = await GymCrushService.canCreateNewCrush();
     if (!canCreate) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -287,7 +285,6 @@ class _GymCrushBottomSheetState extends State<GymCrushBottomSheet>
                             description: '',
                             onTap: () async {
                               await GymCrushService.ignoreUser(
-                                widget.currentUserId,
                                 widget.user.userId,
                               );
                               if (!mounted) return;
