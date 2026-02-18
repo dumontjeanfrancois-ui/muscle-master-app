@@ -181,14 +181,42 @@ class _RealVideoAnalysisScreenState extends State<RealVideoAnalysisScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              'Enregistrez votre première vidéo\npour commencer l\'analyse technique',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 16,
+            if (kIsWeb) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppTheme.neonOrange.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.neonOrange),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.smartphone, color: AppTheme.neonOrange, size: 32),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '📱 L\'analyse vidéo est disponible uniquement sur les applications mobiles Android et iOS',
+                        style: TextStyle(
+                          color: AppTheme.neonOrange,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ] else ...[
+              Text(
+                'Enregistrez votre première vidéo\npour commencer l\'analyse technique',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 16,
+                ),
+              ),
+            ],
             const SizedBox(height: 32),
             _buildAnalysisInfo(),
           ],

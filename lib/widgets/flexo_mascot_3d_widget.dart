@@ -142,7 +142,10 @@ class _FlexoMascot3DWidgetState extends State<FlexoMascot3DWidget>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (context) => MascotBottomSheet(
         mascotImage: _mascotImage,
       ),
@@ -315,135 +318,146 @@ class _MascotBottomSheetState extends State<MascotBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    final settings = MascotService.getSettings();
-    final mascotName = settings.customName ?? (settings.selectedMascot == 'female' ? 'Flexa' : 'Flexo');
+    final mascotSettings = MascotService.getSettings();
+    final mascotName = mascotSettings.displayName;
 
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        decoration: BoxDecoration(
-          color: AppTheme.cardDark,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primaryOrange.withOpacity(0.2),
-              blurRadius: 30,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            // Poignée de fermeture
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.textSecondary.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(2),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppTheme.cardDark,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
-            ),
-            const SizedBox(height: 20),
-            // Mascotte en grand avec animation
-            ScaleTransition(
-              scale: _scaleAnimation,
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryOrange.withOpacity(0.4),
-                      blurRadius: 40,
-                      spreadRadius: 10,
-                    ),
-                  ],
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryOrange.withOpacity(0.2),
+                  blurRadius: 30,
+                  spreadRadius: 5,
                 ),
-                child: ClipOval(
-                  child: Image.asset(
-                    widget.mascotImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppTheme.cardDark,
-                        child: const Icon(
-                          Icons.sports_martial_arts,
-                          color: AppTheme.primaryOrange,
-                          size: 80,
-                        ),
-                      );
-                    },
+              ],
+            ),
+            child: ListView(
+              controller: scrollController,
+              padding: EdgeInsets.zero,
+              children: [
+                // Poignée de fermeture (centrée)
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.textSecondary.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Nom mascotte
-            Text(
-              mascotName,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primaryOrange,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Votre coach personnel',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Boutons d'action
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    _buildActionButton(
-                      icon: Icons.chat_bubble_rounded,
-                      label: 'Chat IA',
-                      color: AppTheme.neonPurple,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.of(context).pushNamed('/mascot_chat');
-                      },
+                const SizedBox(height: 20),
+                // Mascotte en grand avec animation (centrée)
+                Center(
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.primaryOrange.withOpacity(0.4),
+                            blurRadius: 40,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          widget.mascotImage,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: AppTheme.cardDark,
+                              child: const Icon(
+                                Icons.sports_martial_arts,
+                                color: AppTheme.primaryOrange,
+                                size: 80,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    _buildActionButton(
-                      icon: Icons.settings_rounded,
-                      label: 'Paramètres mascotte',
-                      color: AppTheme.neonBlue,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.of(context).pushNamed('/mascot_settings');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildActionButton(
-                      icon: Icons.close_rounded,
-                      label: 'Fermer',
-                      color: AppTheme.textSecondary,
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                // Nom mascotte
+                Text(
+                  mascotName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryOrange,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Votre coach personnel',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Boutons d'action
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      _buildActionButton(
+                        icon: Icons.chat_bubble_rounded,
+                        label: 'Chat IA',
+                        color: AppTheme.neonPurple,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.of(context).pushNamed('/mascot_chat');
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _buildActionButton(
+                        icon: Icons.settings_rounded,
+                        label: 'Paramètres mascotte',
+                        color: AppTheme.neonBlue,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.of(context).pushNamed('/mascot_settings');
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _buildActionButton(
+                        icon: Icons.close_rounded,
+                        label: 'Fermer',
+                        color: AppTheme.textSecondary,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

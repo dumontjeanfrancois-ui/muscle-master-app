@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/theme.dart';
 import '../models/video_analysis.dart';
@@ -18,10 +18,7 @@ class VideoRecorderScreen extends StatefulWidget {
 }
 
 class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
-  CameraController? _cameraController;
-  List<CameraDescription>? _cameras;
-  bool _isInitialized = false;
-  bool _isRecording = false;
+  final ImagePicker _picker = ImagePicker();
   String? _recordedVideoPath;
   VideoPlayerController? _videoPlayerController;
   final VideoAnalysisService _videoService = VideoAnalysisService();
@@ -33,159 +30,126 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> _recordVideo() async {
+    // Sur Web, l'enregistrement vidéo n'est pas supporté de la même manière
     if (kIsWeb) {
-      // Mode Web : simulation
-      setState(() {
-        _isInitialized = true;
-      });
-      return;
-    }
-
-    try {
-      _cameras = await availableCameras();
-      if (_cameras!.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('❌ Aucune caméra disponible')),
-          );
-        }
-        return;
-      }
-
-      // Utiliser la caméra arrière par défaut
-      final camera = _cameras!.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => _cameras!.first,
-      );
-
-      _cameraController = CameraController(
-        camera,
-        ResolutionPreset.high,
-        enableAudio: true,
-      );
-
-      await _cameraController!.initialize();
       if (mounted) {
-        setState(() {
-          _isInitialized = true;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur caméra : $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _startRecording() async {
-    if (kIsWeb) {
-      // Simulation pour Web
-      setState(() {
-        _isRecording = true;
-      });
-      
-      await Future.delayed(const Duration(seconds: 5));
-      
-      if (mounted) {
-        setState(() {
-          _isRecording = false;
-          _recordedVideoPath = 'demo_video_${DateTime.now().millisecondsSinceEpoch}';
-        });
-        
-        // Demander le nom de l'exercice
-        final exerciseName = await _showExerciseNameDialog();
-        if (exerciseName != null) {
-          await _saveVideoAnalysis(_recordedVideoPath!, exerciseName: exerciseName);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Vidéo enregistrée ! (Mode démo Web)'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      }
-      return;
-    }
-
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return;
-    }
-
-    try {
-      await _cameraController!.startVideoRecording();
-      setState(() {
-        _isRecording = true;
-      });
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur enregistrement : $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    if (kIsWeb) {
-      return;
-    }
-
-    if (_cameraController == null || !_cameraController!.value.isRecordingVideo) {
-      return;
-    }
-
-    try {
-      final videoFile = await _cameraController!.stopVideoRecording();
-      setState(() {
-        _isRecording = false;
-        _recordedVideoPath = videoFile.path;
-      });
-
-      // Initialiser le lecteur vidéo
-      _videoPlayerController = VideoPlayerController.file(File(videoFile.path));
-      await _videoPlayerController!.initialize();
-      
-      // Demander le nom de l'exercice
-      final exerciseName = await _showExerciseNameDialog();
-      
-      // Sauvegarder et analyser avec IA
-      if (exerciseName != null && mounted) {
-        // Afficher dialogue de chargement
         showDialog(
           context: context,
-          barrierDismissible: false,
           builder: (context) => AlertDialog(
             backgroundColor: AppTheme.cardDark,
+            title: Row(
+              children: [
+                Icon(Icons.info, color: AppTheme.neonBlue),
+                const SizedBox(width: 12),
+                const Text('Mode Web'),
+              ],
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircularProgressIndicator(color: AppTheme.neonPurple),
-                const SizedBox(height: 20),
                 Text(
-                  '🤖 Analyse IA en cours...',
-                  style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+                  '📱 Fonctionnalité Mobile Uniquement',
+                  style: TextStyle(
+                    color: AppTheme.neonPurple,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Text(
-                  'Gemini analyse votre technique',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  'L\'enregistrement vidéo avec analyse IA est disponible uniquement sur les applications mobiles Android et iOS.\n\n'
+                  'Pour utiliser cette fonctionnalité :\n'
+                  '• Téléchargez l\'APK Android ou l\'app iOS\n'
+                  '• Installez sur votre téléphone\n'
+                  '• Profitez de l\'analyse vidéo complète !\n\n'
+                  '💡 Le mode Web est limité pour des raisons de compatibilité navigateur.',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
                 ),
               ],
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'COMPRIS',
+                  style: TextStyle(color: AppTheme.neonGreen),
+                ),
+              ),
+            ],
           ),
         );
+      }
+      return;
+    }
+
+    try {
+      // Ouvrir la caméra pour enregistrer une vidéo (Mobile uniquement)
+      final XFile? videoFile = await _picker.pickVideo(
+        source: ImageSource.camera,
+        maxDuration: const Duration(seconds: 60), // Limite à 60 secondes
+      );
+
+      if (videoFile == null) {
+        // Utilisateur a annulé
+        return;
+      }
+
+      setState(() {
+        _recordedVideoPath = videoFile.path;
+      });
+
+      // Initialiser le lecteur vidéo pour prévisualisation
+      if (!kIsWeb) {
+        _videoPlayerController = VideoPlayerController.file(File(videoFile.path));
+        await _videoPlayerController!.initialize();
+      }
+      
+      // Demander le nom de l'exercice
+      if (mounted) {
+        final exerciseName = await _showExerciseNameDialog();
         
-        await _saveVideoAnalysis(videoFile.path, exerciseName: exerciseName);
-        
-        // Fermer dialogue de chargement
-        if (mounted) {
-          Navigator.of(context).pop();
+        if (exerciseName != null) {
+          // Afficher dialogue de chargement
+          if (mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                backgroundColor: AppTheme.cardDark,
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: AppTheme.neonPurple),
+                    const SizedBox(height: 20),
+                    Text(
+                      '🤖 Analyse IA en cours...',
+                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Gemini analyse votre technique',
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          
+          await _saveVideoAnalysis(videoFile.path, exerciseName: exerciseName);
+          
+          // Fermer dialogue de chargement
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         }
       }
 
@@ -201,7 +165,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur arrêt : $e')),
+          SnackBar(content: Text('❌ Erreur enregistrement : $e')),
         );
       }
     }
@@ -324,41 +288,8 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
     }
   }
 
-  Future<void> _switchCamera() async {
-    if (kIsWeb || _cameras == null || _cameras!.length < 2) {
-      return;
-    }
-
-    final currentLens = _cameraController!.description.lensDirection;
-    final newCamera = _cameras!.firstWhere(
-      (c) => c.lensDirection != currentLens,
-      orElse: () => _cameras!.first,
-    );
-
-    await _cameraController?.dispose();
-    _cameraController = CameraController(
-      newCamera,
-      ResolutionPreset.high,
-      enableAudio: true,
-    );
-
-    try {
-      await _cameraController!.initialize();
-      if (mounted) {
-        setState(() {});
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Erreur changement caméra : $e')),
-        );
-      }
-    }
-  }
-
   @override
   void dispose() {
-    _cameraController?.dispose();
     _videoPlayerController?.dispose();
     super.dispose();
   }
@@ -377,91 +308,207 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
             ),
         ],
       ),
-      body: _isInitialized
-          ? Column(
-              children: [
-                Expanded(
-                  child: _recordedVideoPath == null
-                      ? _buildCameraPreview()
-                      : _buildVideoPreview(),
-                ),
-                _buildControls(),
-              ],
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
-            ),
+      body: _recordedVideoPath == null
+          ? _buildInitialView()
+          : _buildVideoPreview(),
     );
   }
 
-  Widget _buildCameraPreview() {
-    if (kIsWeb) {
-      return Container(
-        color: Colors.black,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.videocam,
-                size: 100,
-                color: AppTheme.neonPurple,
+  Widget _buildInitialView() {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.videocam,
+              size: 120,
+              color: AppTheme.neonRed,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'ENREGISTRER UNE VIDÉO',
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
               ),
-              const SizedBox(height: 20),
-              Text(
-                _isRecording ? 'ENREGISTREMENT...' : 'APERÇU CAMÉRA',
-                style: TextStyle(
-                  color: _isRecording ? Colors.red : Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (_isRecording) ...[
-                const SizedBox(height: 20),
-                const CircularProgressIndicator(color: Colors.red),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Stack(
-      children: [
-        CameraPreview(_cameraController!),
-        if (_isRecording)
-          Positioned(
-            top: 20,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+            const SizedBox(height: 12),
+            if (kIsWeb) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppTheme.neonOrange.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.neonOrange),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.fiber_manual_record, color: Colors.white, size: 16),
-                    SizedBox(width: 8),
-                    Text(
-                      'ENREGISTREMENT',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                    Icon(Icons.info, color: AppTheme.neonOrange),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '📱 Fonctionnalité disponible sur Android/iOS uniquement',
+                        style: TextStyle(
+                          color: AppTheme.neonOrange,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
               ),
+            ] else ...[
+              Text(
+                'Appuyez sur le bouton ci-dessous\npour enregistrer votre exercice',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+            const SizedBox(height: 40),
+            _buildAnalysisInfo(),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: 200,
+              height: 60,
+              child: ElevatedButton.icon(
+                onPressed: _recordVideo,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kIsWeb ? AppTheme.textDisabled : AppTheme.neonRed,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                icon: Icon(kIsWeb ? Icons.info : Icons.videocam, size: 28),
+                label: Text(
+                  kIsWeb ? 'INFO' : 'ENREGISTRER',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnalysisInfo() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.neonPurple.withValues(alpha: 0.2),
+            AppTheme.neonBlue.withValues(alpha: 0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.neonPurple.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.auto_awesome,
+            size: 48,
+            color: AppTheme.neonPurple,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'ANALYSE TECHNIQUE IA',
+            style: TextStyle(
+              color: AppTheme.neonPurple,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
             ),
           ),
+          const SizedBox(height: 12),
+          Text(
+            'L\'IA analysera automatiquement :',
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildAnalysisFeature(
+            icon: Icons.speed,
+            title: 'TEMPO',
+            description: 'Vitesse et phases du mouvement',
+            color: AppTheme.neonBlue,
+          ),
+          const SizedBox(height: 12),
+          _buildAnalysisFeature(
+            icon: Icons.accessibility_new,
+            title: 'POSTURE',
+            description: 'Alignement et position du corps',
+            color: AppTheme.neonGreen,
+          ),
+          const SizedBox(height: 12),
+          _buildAnalysisFeature(
+            icon: Icons.fitness_center,
+            title: 'CHARGE',
+            description: 'Recommandations sur le poids',
+            color: AppTheme.neonOrange,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalysisFeature({
+    required IconData icon,
+    required String title,
+    required String description,
+    required Color color,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              Text(
+                description,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -469,7 +516,7 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
   Widget _buildVideoPreview() {
     if (kIsWeb) {
       return Container(
-        color: Colors.black,
+        color: AppTheme.backgroundLight,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -490,11 +537,42 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Mode démo Web',
+                'Vidéo prête pour analyse',
                 style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 14,
                 ),
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _recordedVideoPath = null;
+                        _videoPlayerController?.dispose();
+                        _videoPlayerController = null;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.neonOrange,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('RÉESSAYER'),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.pop(context, _recordedVideoPath),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.neonGreen,
+                      foregroundColor: Colors.black,
+                    ),
+                    icon: const Icon(Icons.check),
+                    label: const Text('TERMINER'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -508,98 +586,82 @@ class _VideoRecorderScreenState extends State<VideoRecorderScreen> {
 
     return Stack(
       children: [
-        Center(
-          child: AspectRatio(
-            aspectRatio: _videoPlayerController!.value.aspectRatio,
-            child: VideoPlayer(_videoPlayerController!),
+        Container(
+          color: Colors.black,
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: _videoPlayerController!.value.aspectRatio,
+              child: VideoPlayer(_videoPlayerController!),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 100,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    if (_videoPlayerController!.value.isPlaying) {
+                      _videoPlayerController!.pause();
+                    } else {
+                      _videoPlayerController!.play();
+                    }
+                  });
+                },
+                backgroundColor: AppTheme.neonGreen,
+                child: Icon(
+                  _videoPlayerController!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                  color: Colors.black,
+                  size: 32,
+                ),
+              ),
+            ],
           ),
         ),
         Positioned(
           bottom: 20,
           left: 0,
           right: 0,
-          child: Center(
-            child: FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  if (_videoPlayerController!.value.isPlaying) {
-                    _videoPlayerController!.pause();
-                  } else {
-                    _videoPlayerController!.play();
-                  }
-                });
-              },
-              backgroundColor: AppTheme.neonGreen,
-              child: Icon(
-                _videoPlayerController!.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                color: Colors.black,
-              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _recordedVideoPath = null;
+                      _videoPlayerController?.dispose();
+                      _videoPlayerController = null;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.neonOrange,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('RÉESSAYER'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context, _recordedVideoPath),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.neonGreen,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.check),
+                  label: const Text('TERMINER'),
+                ),
+              ],
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildControls() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.cardDark,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            if (_recordedVideoPath == null && !kIsWeb && _cameras != null && _cameras!.length > 1)
-              IconButton(
-                onPressed: _isRecording ? null : _switchCamera,
-                icon: const Icon(Icons.flip_camera_ios),
-                iconSize: 32,
-                color: AppTheme.neonBlue,
-              )
-            else
-              const SizedBox(width: 48),
-            FloatingActionButton(
-              onPressed: _recordedVideoPath == null
-                  ? (_isRecording ? _stopRecording : _startRecording)
-                  : () {
-                      setState(() {
-                        _recordedVideoPath = null;
-                        _videoPlayerController?.dispose();
-                        _videoPlayerController = null;
-                      });
-                    },
-              backgroundColor: _recordedVideoPath == null
-                  ? (_isRecording ? Colors.red : AppTheme.neonGreen)
-                  : AppTheme.neonOrange,
-              child: Icon(
-                _recordedVideoPath == null
-                    ? (_isRecording ? Icons.stop : Icons.fiber_manual_record)
-                    : Icons.refresh,
-                size: 32,
-                color: Colors.white,
-              ),
-            ),
-            if (_recordedVideoPath != null)
-              IconButton(
-                onPressed: () => Navigator.pop(context, _recordedVideoPath),
-                icon: const Icon(Icons.check),
-                iconSize: 32,
-                color: AppTheme.neonGreen,
-              )
-            else
-              const SizedBox(width: 48),
-          ],
-        ),
-      ),
     );
   }
 }

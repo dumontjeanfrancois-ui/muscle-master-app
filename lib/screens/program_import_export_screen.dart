@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'dart:developer' as developer;
 import '../utils/theme.dart';
+import '../services/ai_program_generator.dart';
 
 class ProgramImportExportScreen extends StatefulWidget {
   const ProgramImportExportScreen({super.key});
@@ -72,16 +77,87 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
 
   Future<void> _importFromJson() async {
     try {
-      final json = _importController.text.trim();
-      if (json.isEmpty) {
-        throw Exception('Veuillez coller un JSON de programme');
+      final content = _importController.text.trim();
+      if (content.isEmpty) {
+        throw Exception('Veuillez coller le contenu du programme');
       }
 
-      final Map<String, dynamic> program = jsonDecode(json);
-      
-      // Valider la structure
-      if (!program.containsKey('name') || !program.containsKey('days')) {
-        throw Exception('Format de programme invalide');
+      // Afficher dialogue de chargement
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.cardDark,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(color: AppTheme.neonGreen),
+                const SizedBox(height: 16),
+                Text(
+                  '📥 Import en cours...',
+                  style: TextStyle(color: AppTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Analyse du contenu avec l\'IA',
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      Map<String, dynamic> program;
+
+      // Détecter si c'est du JSON ou du texte libre
+      if (content.startsWith('{') && content.endsWith('}')) {
+        // C'est du JSON
+        try {
+          program = jsonDecode(content);
+          
+          // Valider la structure
+          if (!program.containsKey('name') || !program.containsKey('days')) {
+            throw Exception('Format de programme invalide');
+          }
+        } catch (e) {
+          if (mounted) Navigator.of(context).pop();
+          throw Exception('JSON invalide: $e');
+        }
+      } else {
+        // C'est du texte libre - utiliser l'IA
+        final result = await AIProgramGenerator.generateProgram(customPrompt: content);
+        
+        if (mounted) Navigator.of(context).pop();
+        
+        if (result['success'] != true) {
+          throw Exception(result['message'] ?? 'Échec de la génération du programme');
+        }
+        
+        // Convertir AIProgram en Map
+        final aiProgram = result['program'];
+        program = {
+          'name': aiProgram.name,
+          'days': aiProgram.workoutDays.map((day) => {
+            'dayName': day.dayName,
+            'focus': day.focus,
+            'exercises': day.exercises.map((ex) => {
+              'exerciseName': ex.exerciseName,
+              'sets': ex.sets,
+              'reps': ex.reps,
+              'restSeconds': ex.restSeconds,
+              'notes': ex.notes,
+            }).toList(),
+          }).toList(),
+          'description': aiProgram.description,
+        };
+      }
+
+      // Fermer le dialogue si encore ouvert
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
       }
 
       // Ajouter un nouvel ID
@@ -97,20 +173,30 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
         _importController.clear();
       });
 
+      // Recharger la liste
+      await _loadPrograms();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ Programme "${program['name']}" importé !'),
+            content: Text('✅ Programme "${program['name']}" importé et sauvegardé !'),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
     } catch (e) {
+      // Fermer le dialogue si encore ouvert
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('❌ Erreur: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -389,19 +475,44 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  
+                  // Bouton Fichier
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: _importFromFile,
+                      icon: const Icon(Icons.folder_open),
+                      label: const Text(
+                        'FICHIER (TXT, JSON, MD)',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.neonBlue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Bouton Coller
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton.icon(
                       onPressed: _importFromJson,
-                      icon: const Icon(Icons.upload),
+                      icon: const Icon(Icons.content_paste),
                       label: const Text(
-                        'IMPORTER',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        'COLLER DU TEXTE',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.neonBlue,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppTheme.neonGreen,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -549,6 +660,171 @@ class _ProgramImportExportScreenState extends State<ProgramImportExportScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _importFromFile() async {
+    try {
+      // 📱 ACCEPTER TOUS LES TYPES DE FICHIERS pour compatibilité mobile
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any, // ✅ Accepter tous les fichiers
+        allowMultiple: false,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        return; // Utilisateur a annulé
+      }
+
+      final file = result.files.first;
+      String? content;
+      
+      // 🔍 Afficher message de chargement
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.cardDark,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(color: AppTheme.neonBlue),
+                const SizedBox(height: 16),
+                Text(
+                  '📂 Lecture du fichier...',
+                  style: TextStyle(color: AppTheme.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Nom: ${file.name}',
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      // 📖 Tentative de lecture du contenu texte
+      try {
+        if (kIsWeb) {
+          if (file.bytes != null) {
+            content = String.fromCharCodes(file.bytes!);
+          }
+        } else {
+          if (file.path != null) {
+            final fileObj = File(file.path!);
+            content = await fileObj.readAsString();
+          }
+        }
+      } catch (e) {
+        // Le fichier n'est pas lisible en texte (PDF, image, etc.)
+        if (kDebugMode) {
+          developer.log('⚠️ Fichier non lisible en texte: $e', name: 'ImportFile');
+        }
+      }
+      
+      // Fermer le dialogue de chargement
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      // 🔍 Vérifier si on a réussi à lire le contenu
+      if (content != null && content.trim().isNotEmpty) {
+        // ✅ Contenu texte lisible - le mettre dans le TextField
+        _importController.text = content;
+        await _importFromJson();
+      } else {
+        // ❌ Fichier non lisible - proposer conversion IA
+        if (mounted) {
+          final shouldConvert = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: AppTheme.cardDark,
+              title: Row(
+                children: [
+                  Icon(Icons.warning_amber, color: AppTheme.neonOrange, size: 28),
+                  const SizedBox(width: 12),
+                  const Text('Fichier Non Lisible'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ce type de fichier (${file.extension?.toUpperCase() ?? 'INCONNU'}) ne peut pas être lu directement.',
+                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Options :',
+                    style: TextStyle(color: AppTheme.neonBlue, fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildOptionItem('📋 Copier-coller le texte manuellement (recommandé)'),
+                  _buildOptionItem('💡 Décrire ton programme à l\'IA pour génération'),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.neonBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.neonBlue.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      '💡 Conseil : Utilise l\'option "COLLER DU TEXTE" pour de meilleurs résultats',
+                      style: TextStyle(color: AppTheme.neonBlue, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('OK', style: TextStyle(color: AppTheme.neonBlue)),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+
+    } catch (e) {
+      // Fermer le dialogue si encore ouvert
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Erreur lecture fichier : $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+  
+  Widget _buildOptionItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.check_circle, color: AppTheme.neonGreen, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
+          ),
+        ],
       ),
     );
   }

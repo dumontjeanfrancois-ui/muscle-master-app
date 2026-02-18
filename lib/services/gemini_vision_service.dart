@@ -5,7 +5,62 @@ import '../models/workout_video.dart';
 
 class GeminiVisionService {
   static const String _apiKey = 'AIzaSyD19ooMMrcDFMMSLai2MVSwX3taTc8GguI'; // Clé API Muscle Master
-  static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+  static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+  
+  /// Analyse une image avec un prompt personnalisé
+  Future<String> analyzeImage(String imagePath, String prompt) async {
+    if (_apiKey == 'YOUR_GEMINI_API_KEY_HERE') {
+      throw Exception('⚠️ Clé API Gemini manquante. Configurez votre clé dans gemini_vision_service.dart');
+    }
+
+    try {
+      // Lire et encoder l'image en base64
+      final file = File(imagePath);
+      if (!await file.exists()) {
+        throw Exception('Le fichier image n\'existe pas: $imagePath');
+      }
+
+      final bytes = await file.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      // Construire la requête
+      final parts = <Map<String, dynamic>>[
+        {'text': prompt},
+        {
+          'inline_data': {
+            'mime_type': 'image/jpeg',
+            'data': base64Image,
+          }
+        }
+      ];
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl?key=$_apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'contents': [
+            {'parts': parts}
+          ],
+          'generationConfig': {
+            'temperature': 0.7,
+            'topK': 40,
+            'topP': 0.95,
+            'maxOutputTokens': 1024,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? 
+               'Impossible de générer une réponse.';
+      } else {
+        throw Exception('Erreur API Gemini (${response.statusCode}): ${response.body}');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
   
   /// Analyse technique d'un exercice vidéo à partir de frames
   static Future<WorkoutAnalysis> analyzeWorkoutVideo({

@@ -6,7 +6,7 @@ class GeminiService {
   // ⚠️ IMPORTANT : Clé API Gemini configurée pour Muscle Master
   // Obtenez-la gratuitement sur : https://makersuite.google.com/app/apikey
   static const String _apiKey = 'AIzaSyD19ooMMrcDFMMSLai2MVSwX3taTc8GguI';
-  static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
+  static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
   
   // Limites gratuites
   static const int FREE_QUESTIONS_PER_MONTH = 10;

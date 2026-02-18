@@ -1,75 +1,77 @@
-import 'package:hive/hive.dart';
-
-part 'exercise.g.dart';
-
-@HiveType(typeId: 0)
-class Exercise extends HiveObject {
-  @HiveField(0)
-  String id;
-
-  @HiveField(1)
-  String name;
-
-  @HiveField(2)
-  String description;
-
-  @HiveField(3)
-  List<String> muscleGroups;
-
-  @HiveField(4)
-  String difficulty; // Débutant, Intermédiaire, Avancé
-
-  @HiveField(5)
-  String equipment; // Haltères, Barre, Poids de corps, Machine
-
-  @HiveField(6)
-  String videoUrl;
-
-  @HiveField(7)
-  String imageUrl;
-
-  @HiveField(8)
-  List<String> instructions;
+/// Modèle pour un exercice de musculation
+class Exercise {
+  final String id;
+  final String name;
+  final String description;
+  final List<String> primaryMuscles;
+  final List<String> secondaryMuscles;
+  final String equipment;
+  final String difficulty; // Débutant, Intermédiaire, Avancé
+  final String category; // Force, Cardio, Flexibilité, etc.
+  final List<String> instructions;
+  final String? videoUrl;
+  final String? imageUrl;
+  final List<String>? tips;
+  final List<String>? commonMistakes;
 
   Exercise({
     required this.id,
     required this.name,
     required this.description,
-    required this.muscleGroups,
-    required this.difficulty,
+    required this.primaryMuscles,
+    required this.secondaryMuscles,
     required this.equipment,
-    this.videoUrl = '',
-    this.imageUrl = '',
-    this.instructions = const [],
+    required this.difficulty,
+    required this.category,
+    required this.instructions,
+    this.videoUrl,
+    this.imageUrl,
+    this.tips,
+    this.commonMistakes,
   });
-
-  factory Exercise.fromJson(Map<String, dynamic> json) {
-    return Exercise(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      muscleGroups: List<String>.from(json['muscleGroups'] as List),
-      difficulty: json['difficulty'] as String,
-      equipment: json['equipment'] as String,
-      videoUrl: json['videoUrl'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String? ?? '',
-      instructions: json['instructions'] != null 
-          ? List<String>.from(json['instructions'] as List)
-          : [],
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
       'description': description,
-      'muscleGroups': muscleGroups,
-      'difficulty': difficulty,
+      'primaryMuscles': primaryMuscles,
+      'secondaryMuscles': secondaryMuscles,
       'equipment': equipment,
+      'difficulty': difficulty,
+      'category': category,
+      'instructions': instructions,
       'videoUrl': videoUrl,
       'imageUrl': imageUrl,
-      'instructions': instructions,
+      'tips': tips,
+      'commonMistakes': commonMistakes,
     };
+  }
+
+  factory Exercise.fromJson(Map<String, dynamic> json) {
+    return Exercise(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      primaryMuscles: List<String>.from(json['primaryMuscles'] as List),
+      secondaryMuscles: List<String>.from(json['secondaryMuscles'] as List),
+      equipment: json['equipment'] as String,
+      difficulty: json['difficulty'] as String,
+      category: json['category'] as String,
+      instructions: List<String>.from(json['instructions'] as List),
+      videoUrl: json['videoUrl'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      tips: json['tips'] != null ? List<String>.from(json['tips'] as List) : null,
+      commonMistakes: json['commonMistakes'] != null ? List<String>.from(json['commonMistakes'] as List) : null,
+    );
+  }
+
+  /// Vérifie si l'exercice correspond à une requête de recherche
+  bool matchesQuery(String query) {
+    final lowerQuery = query.toLowerCase();
+    return name.toLowerCase().contains(lowerQuery) ||
+        description.toLowerCase().contains(lowerQuery) ||
+        primaryMuscles.any((m) => m.toLowerCase().contains(lowerQuery)) ||
+        equipment.toLowerCase().contains(lowerQuery);
   }
 }

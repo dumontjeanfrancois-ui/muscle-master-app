@@ -6,9 +6,17 @@ import 'advanced_macro_calculator_screen.dart';
 import 'smart_recipes_screen.dart';
 import 'ai_chef_screen.dart';
 import 'ai_photo_analysis_screen.dart';
+import 'recipe_detail_screen.dart';
 
-class NutritionScreen extends StatelessWidget {
+class NutritionScreen extends StatefulWidget {
   const NutritionScreen({super.key});
+
+  @override
+  State<NutritionScreen> createState() => _NutritionScreenState();
+}
+
+class _NutritionScreenState extends State<NutritionScreen> {
+  String _selectedCategory = 'Tous';
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +72,18 @@ class NutritionScreen extends StatelessWidget {
   Widget _buildRecipesTab(BuildContext context) {
     final categories = ['Tous', 'Petit-déjeuner', 'Déjeuner', 'Dîner', 'Snack', 'Post-workout'];
     
+    // Filtrer les recettes selon la catégorie sélectionnée
+    final filteredRecipes = _selectedCategory == 'Tous'
+        ? DefaultData.recipes
+        : DefaultData.recipes.where((recipe) => recipe['category'] == _selectedCategory).toList();
+    
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Boutons IA Chef, Recettes Personnalisées et Photo Calories
+            // Boutons IA Chef et Photo Calories
             Row(
               children: [
                 Expanded(
@@ -86,75 +99,74 @@ class NutritionScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.neonOrange,
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SmartRecipesScreen()),
+                        MaterialPageRoute(builder: (context) => const AIPhotoAnalysisScreen()),
                       );
                     },
-                    icon: const Icon(Icons.restaurant_menu),
-                    label: const Text('PERSONNALISÉES'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.neonGreen,
-                      side: BorderSide(color: AppTheme.neonGreen),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('PHOTO IA'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.neonPurple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            // Bouton Photo Calories IA
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AIPhotoAnalysisScreen()),
-                  );
-                },
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('📸 PHOTO CALORIES IA'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.neonPurple,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
-            ),
             const SizedBox(height: 20),
+            // Filtres de catégories avec état
             SizedBox(
               height: 40,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
+                  final category = categories[index];
+                  final isSelected = category == _selectedCategory;
                   return Container(
                     margin: const EdgeInsets.only(right: 8),
                     child: FilterChip(
-                      label: Text(categories[index]),
-                      selected: index == 0,
-                      onSelected: (selected) {},
+                      label: Text(category),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedCategory = category;
+                        });
+                      },
                       selectedColor: AppTheme.neonOrange,
                       backgroundColor: AppTheme.cardDark,
                       labelStyle: TextStyle(
-                        color: index == 0 ? AppTheme.primaryDark : AppTheme.textPrimary,
+                        color: isSelected ? AppTheme.primaryDark : AppTheme.textPrimary,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 20),
-            ...DefaultData.recipes.take(10).map((recipe) => _buildRecipeCard(recipe)).toList(),
+            const SizedBox(height: 16),
+            // Afficher le nombre de recettes dans la catégorie
+            Text(
+              '${filteredRecipes.length} recette${filteredRecipes.length > 1 ? 's' : ''}',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Liste des recettes filtrées
+            ...filteredRecipes.map((recipe) => _buildRecipeCard(recipe)).toList(),
           ],
         ),
       ),
@@ -162,84 +174,140 @@ class NutritionScreen extends StatelessWidget {
   }
 
   Widget _buildRecipeCard(Map<String, dynamic> recipe) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppTheme.neonOrange.withOpacity(0.3),
-          width: 1,
+    final prepTime = recipe['prepTimeMinutes'] as int;
+    final cookTime = recipe['cookTimeMinutes'] as int? ?? 0;
+    final totalTime = prepTime + cookTime;
+    
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RecipeDetailScreen(recipe: recipe),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.cardDark,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppTheme.neonOrange.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  recipe['name'],
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        recipe['name'],
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.neonOrange.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          recipe['category'],
+                          style: TextStyle(
+                            color: AppTheme.neonOrange,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.neonOrange.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.local_fire_department, size: 14, color: AppTheme.neonOrange),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${recipe['calories']} kcal',
-                      style: TextStyle(
-                        color: AppTheme.neonOrange,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.neonOrange.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.local_fire_department, size: 14, color: AppTheme.neonOrange),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${recipe['calories']} kcal',
+                        style: TextStyle(
+                          color: AppTheme.neonOrange,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            recipe['description'],
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 14,
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildMacroChip('P: ${recipe['protein']}g', AppTheme.neonBlue),
-              const SizedBox(width: 8),
-              _buildMacroChip('G: ${recipe['carbs']}g', AppTheme.neonGreen),
-              const SizedBox(width: 8),
-              _buildMacroChip('L: ${recipe['fats']}g', AppTheme.neonOrange),
-              const Spacer(),
-              Icon(Icons.access_time, size: 16, color: AppTheme.textSecondary),
-              const SizedBox(width: 4),
-              Text(
-                '${recipe['prepTimeMinutes']} min',
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                ),
+            const SizedBox(height: 8),
+            Text(
+              recipe['description'],
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
               ),
-            ],
-          ),
-        ],
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildMacroChip('P: ${recipe['protein']}g', AppTheme.neonBlue),
+                const SizedBox(width: 8),
+                _buildMacroChip('G: ${recipe['carbs']}g', AppTheme.neonGreen),
+                const SizedBox(width: 8),
+                _buildMacroChip('L: ${recipe['fats']}g', AppTheme.neonOrange),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.kitchen, size: 16, color: AppTheme.textSecondary),
+                const SizedBox(width: 4),
+                Text(
+                  'Prépa: ${prepTime} min',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+                if (cookTime > 0) ...[
+                  const SizedBox(width: 12),
+                  Icon(Icons.whatshot, size: 16, color: AppTheme.textSecondary),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Cuisson: ${cookTime} min',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+                const Spacer(),
+                Icon(Icons.chevron_right, color: AppTheme.neonOrange, size: 20),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -248,9 +316,9 @@ class NutritionScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         text,
@@ -276,8 +344,8 @@ class NutritionScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppTheme.neonPurple.withOpacity(0.3),
-                    AppTheme.neonBlue.withOpacity(0.2),
+                    AppTheme.neonPurple.withValues(alpha: 0.3),
+                    AppTheme.neonBlue.withValues(alpha: 0.2),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(16),
@@ -412,7 +480,7 @@ class NutritionScreen extends StatelessWidget {
           color: AppTheme.cardDark,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -421,7 +489,7 @@ class NutritionScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 32),

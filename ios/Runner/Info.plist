@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Privacy Permissions Descriptions (OBLIGATOIRES pour iOS) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Muscle Master a besoin d'accéder à votre caméra pour enregistrer vos exercices pendant les séances d'entraînement. Ces vidéos vous permettent d'analyser votre technique et de suivre votre progression.</string>
+	
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Muscle Master a besoin d'accéder au microphone pour enregistrer l'audio de vos vidéos d'entraînement. L'audio vous aide à analyser votre respiration et votre exécution.</string>
+	
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Muscle Master a besoin d'accéder à votre photothèque pour sauvegarder vos vidéos d'entraînement et les partager si vous le souhaitez.</string>
+	
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Muscle Master souhaite sauvegarder vos vidéos d'entraînement dans votre photothèque pour que vous puissiez les consulter ultérieurement.</string>
+	
+	<key>NSMotionUsageDescription</key>
+	<string>Muscle Master utilise les capteurs de mouvement pour stabiliser vos vidéos d'entraînement et améliorer la qualité de l'enregistrement.</string>
 </dict>
 </plist>

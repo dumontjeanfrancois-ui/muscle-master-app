@@ -29,31 +29,17 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
     });
 
     try {
-      final result = await AuthService.deleteAccount();
+      await AuthService.deleteAccount();
       if (!mounted) return;
 
-      final success = result['success'] as bool? ?? false;
-      final message = result['message'] as String? ?? 'Erreur inconnue';
-      
-      if (success) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Compte supprimé avec succès'),
-            backgroundColor: AppTheme.neonGreen,
-          ),
-        );
-        if (!mounted) return;
-        Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false);
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: AppTheme.neonRed,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Compte supprimé avec succès'),
+          backgroundColor: AppTheme.neonGreen,
+        ),
+      );
+      if (!mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

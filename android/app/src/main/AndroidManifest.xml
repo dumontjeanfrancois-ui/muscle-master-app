@@ -1,4 +1,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permissions réseau (précédentes) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Permissions vidéo/caméra (NOUVELLES - pour enregistrement séances) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
+                     android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+                     android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    
+    <!-- Déclaration des features (optionnelles) -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    
+    <!-- 
+        JUSTIFICATION DES PERMISSIONS (DATA SAFETY):
+        - CAMERA: Enregistrer les exercices pendant les séances
+        - RECORD_AUDIO: Audio synchronisé avec vidéo d'exercice
+        - STORAGE: Sauvegarder et partager les vidéos d'entraînement
+        
+        COMPLIANCE: Ces permissions sont optionnelles - l'utilisateur peut
+        refuser et utiliser l'app sans enregistrement vidéo
+    -->
+    
     <application
         android:label="Muscle Master"
         android:name="${applicationName}"

@@ -21,7 +21,7 @@ import 'services/ad_service.dart';
 import 'services/vip_service.dart';
 import 'services/mascot_service.dart';
 import 'models/mascot_settings.dart';
-import 'widgets/flexo_mascot_widget.dart';
+import 'widgets/flexo_mascot_3d_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

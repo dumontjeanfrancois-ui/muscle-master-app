@@ -33,10 +33,16 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
   final TextEditingController _repsController = TextEditingController();
   double? _oneRMResult;
 
+  // IMC Calculator
+  final TextEditingController _imcWeightController = TextEditingController();
+  final TextEditingController _imcHeightController = TextEditingController();
+  double? _imcResult;
+  String? _imcCategory;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this, initialIndex: widget.initialTab);
+    _tabController = TabController(length: 4, vsync: this, initialIndex: widget.initialTab);
   }
 
   @override
@@ -62,9 +68,11 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
           indicatorColor: AppTheme.neonBlue,
           labelColor: AppTheme.neonBlue,
           unselectedLabelColor: AppTheme.textSecondary,
+          isScrollable: true,
           tabs: const [
             Tab(text: 'CALORIES'),
             Tab(text: 'MACROS'),
+            Tab(text: 'IMC'),
             Tab(text: '1RM'),
           ],
         ),
@@ -74,6 +82,7 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
         children: [
           _buildCaloriesCalculator(),
           _buildMacrosCalculator(),
+          _buildIMCCalculator(),
           _build1RMCalculator(),
         ],
       ),
@@ -392,6 +401,228 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // CALCULATEUR IMC
+  Widget _buildIMCCalculator() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Calculez votre Indice de Masse Corporelle (IMC)',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 15,
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            _buildTextField(
+              controller: _imcWeightController,
+              label: 'Poids (kg)',
+              icon: Icons.monitor_weight_outlined,
+            ),
+            const SizedBox(height: 16),
+            
+            _buildTextField(
+              controller: _imcHeightController,
+              label: 'Taille (cm)',
+              icon: Icons.height_rounded,
+            ),
+            const SizedBox(height: 32),
+            
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _calculateIMC,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.neonPurple,
+                  foregroundColor: AppTheme.primaryDark,
+                ),
+                child: const Text('CALCULER IMC', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            
+            if (_imcResult != null) ...[
+              const SizedBox(height: 32),
+              _buildIMCResultCard(),
+              const SizedBox(height: 16),
+              _buildIMCCategoryInfo(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _calculateIMC() {
+    final weight = double.tryParse(_imcWeightController.text);
+    final heightCm = double.tryParse(_imcHeightController.text);
+
+    if (weight == null || heightCm == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Veuillez remplir tous les champs'), backgroundColor: AppTheme.neonOrange),
+      );
+      return;
+    }
+
+    // Convertir taille en mètres
+    final heightM = heightCm / 100;
+    
+    // Calculer IMC
+    final imc = weight / (heightM * heightM);
+    
+    // Déterminer la catégorie
+    String category;
+    if (imc < 18.5) {
+      category = 'Insuffisance pondérale';
+    } else if (imc < 25) {
+      category = 'Poids normal';
+    } else if (imc < 30) {
+      category = 'Surpoids';
+    } else if (imc < 35) {
+      category = 'Obésité modérée';
+    } else if (imc < 40) {
+      category = 'Obésité sévère';
+    } else {
+      category = 'Obésité morbide';
+    }
+
+    setState(() {
+      _imcResult = imc;
+      _imcCategory = category;
+    });
+  }
+
+  Widget _buildIMCResultCard() {
+    Color categoryColor;
+    if (_imcResult! < 18.5) {
+      categoryColor = AppTheme.neonBlue;
+    } else if (_imcResult! < 25) {
+      categoryColor = AppTheme.neonGreen;
+    } else if (_imcResult! < 30) {
+      categoryColor = AppTheme.neonOrange;
+    } else {
+      categoryColor = Colors.red;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            categoryColor.withOpacity(0.3),
+            categoryColor.withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: categoryColor.withOpacity(0.5), width: 2),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.favorite, color: categoryColor, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            'Votre IMC',
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _imcResult!.toStringAsFixed(1),
+            style: TextStyle(
+              color: categoryColor,
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _imcCategory!,
+            style: TextStyle(
+              color: categoryColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIMCCategoryInfo() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.cardDark,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.neonPurple.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'CLASSIFICATION IMC',
+            style: TextStyle(
+              color: AppTheme.neonPurple,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildIMCCategoryRow('< 18.5', 'Insuffisance pondérale', AppTheme.neonBlue),
+          _buildIMCCategoryRow('18.5 - 24.9', 'Poids normal', AppTheme.neonGreen),
+          _buildIMCCategoryRow('25 - 29.9', 'Surpoids', AppTheme.neonOrange),
+          _buildIMCCategoryRow('30 - 34.9', 'Obésité modérée', Colors.red.shade400),
+          _buildIMCCategoryRow('35 - 39.9', 'Obésité sévère', Colors.red.shade600),
+          _buildIMCCategoryRow('≥ 40', 'Obésité morbide', Colors.red.shade800),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIMCCategoryRow(String range, String label, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          Text(
+            range,
+            style: TextStyle(
+              color: color,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -727,6 +958,8 @@ class _CalculatorsScreenState extends State<CalculatorsScreen> with SingleTicker
     _ageController.dispose();
     _weightLiftedController.dispose();
     _repsController.dispose();
+    _imcWeightController.dispose();
+    _imcHeightController.dispose();
     super.dispose();
   }
 }

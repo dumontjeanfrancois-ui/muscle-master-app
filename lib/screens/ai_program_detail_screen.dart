@@ -47,9 +47,51 @@ class _AIProgramDetailScreenState extends State<AIProgramDetailScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.delete_outline, color: AppTheme.neonOrange),
-            onPressed: () => _confirmDelete(),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: AppTheme.textSecondary),
+            color: AppTheme.cardDark,
+            onSelected: (value) {
+              if (value == 'export_json') {
+                _exportAsJson();
+              } else if (value == 'export_text') {
+                _exportAsText();
+              } else if (value == 'delete') {
+                _confirmDelete();
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'export_json',
+                child: Row(
+                  children: [
+                    Icon(Icons.code, color: AppTheme.neonBlue, size: 20),
+                    const SizedBox(width: 12),
+                    const Text('Exporter JSON'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'export_text',
+                child: Row(
+                  children: [
+                    Icon(Icons.text_fields, color: AppTheme.neonGreen, size: 20),
+                    const SizedBox(width: 12),
+                    const Text('Exporter Texte'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, color: AppTheme.neonOrange, size: 20),
+                    const SizedBox(width: 12),
+                    const Text('Supprimer'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -64,7 +106,110 @@ class _AIProgramDetailScreenState extends State<AIProgramDetailScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: _buildSelectProgramButton(),
     );
+  }
+
+  /// Bouton pour sélectionner ce programme comme actif
+  Widget _buildSelectProgramButton() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryDark,
+        border: Border(
+          top: BorderSide(color: AppTheme.neonPurple.withOpacity(0.3)),
+        ),
+      ),
+      child: SafeArea(
+        child: ElevatedButton.icon(
+          onPressed: _selectProgramAsActive,
+          icon: const Icon(Icons.check_circle, size: 24),
+          label: const Text(
+            'SÉLECTIONNER CE PROGRAMME',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.neonGreen,
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 8,
+            shadowColor: AppTheme.neonGreen.withOpacity(0.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Sélectionner ce programme comme actif
+  Future<void> _selectProgramAsActive() async {
+    try {
+      // Afficher un indicateur de chargement
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Définir le programme comme actif
+      final success = await AIProgramGenerator.setActiveProgram(_program.id);
+
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Fermer le dialog de chargement
+
+      if (success) {
+        // Afficher une confirmation
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.black),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '✅ "${_program.name}" est maintenant votre programme actif !',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.neonGreen,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+
+        // Retourner à l'écran précédent
+        Navigator.of(context).pop(true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('❌ Erreur lors de la sélection du programme.'),
+            backgroundColor: AppTheme.neonOrange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Fermer le dialog de chargement
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Erreur : $e'),
+          backgroundColor: AppTheme.neonOrange,
+        ),
+      );
+    }
   }
 
   Widget _buildDaySelector() {
@@ -529,6 +674,52 @@ class _AIProgramDetailScreenState extends State<AIProgramDetailScreen> {
 
   Future<void> _saveProgram() async {
     await AIProgramGenerator.updateProgram(_program);
+  }
+
+  Future<void> _exportAsJson() async {
+    try {
+      await AIProgramGenerator.shareProgram(_program, asJson: true);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('✅ Programme exporté en JSON !'),
+            backgroundColor: AppTheme.neonBlue,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Erreur export : $e'),
+            backgroundColor: AppTheme.neonOrange,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportAsText() async {
+    try {
+      await AIProgramGenerator.shareProgram(_program, asJson: false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('✅ Programme exporté en texte !'),
+            backgroundColor: AppTheme.neonGreen,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Erreur export : $e'),
+            backgroundColor: AppTheme.neonOrange,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _confirmDelete() async {

@@ -98,9 +98,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _removeProfileImage() async {
-    await _profileService.removeProfileImage();
+    await ProfileService.removeProfileImage();
     setState(() {
-      _profileImagePath = null;
+      _profileImagePath = '';
     });
 
     if (mounted) {

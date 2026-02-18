@@ -20,12 +20,14 @@ class AIProgram {
 
   factory AIProgram.fromJson(Map<String, dynamic> json) {
     return AIProgram(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      userProfile: json['userProfile'] as String,
-      workoutDays: (json['workoutDays'] as List)
+      id: json['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      name: json['name']?.toString() ?? 'Programme sans nom',
+      description: json['description']?.toString() ?? '',
+      createdAt: json['createdAt'] != null 
+          ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
+          : DateTime.now(),
+      userProfile: json['userProfile']?.toString() ?? 'Programme importé',
+      workoutDays: (json['workoutDays'] as List? ?? [])
           .map((e) => AIWorkoutDay.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -57,9 +59,9 @@ class AIWorkoutDay {
 
   factory AIWorkoutDay.fromJson(Map<String, dynamic> json) {
     return AIWorkoutDay(
-      dayName: json['dayName'] as String,
-      focus: json['focus'] as String,
-      exercises: (json['exercises'] as List)
+      dayName: json['dayName']?.toString() ?? 'Jour',
+      focus: json['focus']?.toString() ?? 'Non spécifié',
+      exercises: (json['exercises'] as List? ?? [])
           .map((e) => AIExerciseEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -98,17 +100,17 @@ class AIExerciseEntry {
 
   factory AIExerciseEntry.fromJson(Map<String, dynamic> json) {
     return AIExerciseEntry(
-      exerciseName: json['exerciseName'] as String,
-      sets: json['sets'] as int,
-      reps: json['reps'] as String,
-      restSeconds: json['restSeconds'] as int,
-      notes: json['notes'] as String? ?? '',
+      exerciseName: json['exerciseName']?.toString() ?? 'Exercice',
+      sets: json['sets'] is int ? json['sets'] as int : int.tryParse(json['sets']?.toString() ?? '3') ?? 3,
+      reps: json['reps']?.toString() ?? '10',
+      restSeconds: json['restSeconds'] is int ? json['restSeconds'] as int : int.tryParse(json['restSeconds']?.toString() ?? '60') ?? 60,
+      notes: json['notes']?.toString() ?? '',
       completedSets: json['completedSets'] != null
           ? (json['completedSets'] as List)
               .map((e) => SetEntry.fromJson(e as Map<String, dynamic>))
               .toList()
           : [],
-      userNotes: json['userNotes'] as String? ?? '',
+      userNotes: json['userNotes']?.toString() ?? '',
     );
   }
 
@@ -143,12 +145,12 @@ class SetEntry {
 
   factory SetEntry.fromJson(Map<String, dynamic> json) {
     return SetEntry(
-      setNumber: json['setNumber'] as int,
-      weight: (json['weight'] as num).toDouble(),
-      reps: json['reps'] as int,
-      completed: json['completed'] as bool? ?? false,
+      setNumber: json['setNumber'] is int ? json['setNumber'] as int : int.tryParse(json['setNumber']?.toString() ?? '1') ?? 1,
+      weight: json['weight'] != null ? (json['weight'] as num).toDouble() : 0.0,
+      reps: json['reps'] is int ? json['reps'] as int : int.tryParse(json['reps']?.toString() ?? '0') ?? 0,
+      completed: json['completed'] == true,
       timestamp: json['timestamp'] != null 
-          ? DateTime.parse(json['timestamp'] as String)
+          ? DateTime.tryParse(json['timestamp'].toString())
           : null,
     );
   }
