@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'dart:io' show Platform;
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart'; // Désactivé temporairement
 import '../models/user.dart';
 
 class AuthService {
@@ -158,4 +160,86 @@ class AuthService {
     final settingsBox = await Hive.openBox('app_settings');
     await settingsBox.delete(_currentUserKey);
   }
+
+  /* TEMPORAIREMENT DÉSACTIVÉ - Problème de build Kotlin
+  /// Sign in With Apple (COMPLIANCE APPLE APP STORE)
+  /// Requis si Email/Password est proposé
+  static Future<Map<String, dynamic>> signInWithApple() async {
+    try {
+      // Vérifier si disponible (iOS uniquement)
+      if (!Platform.isIOS) {
+        return {
+          'success': false,
+          'message': 'Sign in With Apple disponible uniquement sur iOS',
+        };
+      }
+
+      // Demander les credentials Apple
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Extraire les informations
+      final appleId = credential.userIdentifier;
+      final email = credential.email ?? '$appleId@privaterelay.appleid.com';
+      final firstName = credential.givenName ?? '';
+      final lastName = credential.familyName ?? '';
+      final fullName = '$firstName $lastName'.trim();
+      final displayName = fullName.isNotEmpty ? fullName : 'Utilisateur Apple';
+
+      // Vérifier si l'utilisateur existe déjà
+      final usersBox = await Hive.openBox<AppUser>(_boxName);
+      AppUser? existingUser = usersBox.values.firstWhere(
+        (user) => user.email == email,
+        orElse: () => AppUser(
+          id: '',
+          email: '',
+          password: '',
+          name: '',
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      late AppUser user;
+
+      if (existingUser.email.isEmpty) {
+        // Créer nouveau compte
+        user = AppUser(
+          id: appleId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          email: email,
+          password: 'apple_sign_in', // Pas de mot de passe pour Apple Sign In
+          name: displayName,
+          createdAt: DateTime.now(),
+          lastLogin: DateTime.now(),
+          isLoggedIn: true,
+        );
+        await usersBox.put(user.id, user);
+      } else {
+        // Utilisateur existant
+        user = existingUser;
+        user.isLoggedIn = true;
+        user.lastLogin = DateTime.now();
+        await user.save();
+      }
+
+      // Définir comme utilisateur actuel
+      final settingsBox = await Hive.openBox('app_settings');
+      await settingsBox.put(_currentUserKey, user.id);
+
+      return {
+        'success': true,
+        'message': 'Connexion avec Apple réussie',
+        'user': user,
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Erreur Sign in With Apple: $e',
+      };
+    }
+  }
+  */
 }

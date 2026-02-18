@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart'; // Désactivé temporairement
 import '../utils/theme.dart';
 import '../services/auth_service.dart';
 import '../main.dart';
@@ -75,6 +77,42 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
+  /* TEMPORAIREMENT DÉSACTIVÉ - Problème de build Kotlin
+  /// Sign in With Apple (COMPLIANCE APPLE - iOS uniquement)
+  Future<void> _signInWithApple() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await AuthService.signInWithApple();
+
+      if (!mounted) return;
+
+      if (result['success']) {
+        // Navigation vers l'app principale
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message']),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -278,6 +316,62 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 40),
+
+              /* TEMPORAIREMENT DÉSACTIVÉ - Problème de build Kotlin
+              // Sign in With Apple (COMPLIANCE APPLE - iOS uniquement)
+              if (Platform.isIOS) ...[
+                Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: _isLoading ? null : () => _signInWithApple(),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.apple, color: Colors.white, size: 24),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Sign in with Apple',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: AppTheme.textSecondary.withValues(alpha: 0.3))),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OU',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: AppTheme.textSecondary.withValues(alpha: 0.3))),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+              */
 
               // Bouton de soumission
               ElevatedButton(

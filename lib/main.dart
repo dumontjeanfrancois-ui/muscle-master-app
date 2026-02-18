@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'utils/theme.dart';
+import 'screens/public_welcome_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/programs_screen.dart';
 import 'screens/nutrition_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/calculators_screen.dart';
 import 'services/subscription_service.dart';
 import 'services/ad_service.dart';
 import 'services/vip_service.dart';
+import 'services/mascot_service.dart';
+import 'models/mascot_settings.dart';
+import 'widgets/flexo_mascot_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +26,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialiser Hive pour les paramètres de la mascotte
+  await Hive.initFlutter();
+  Hive.registerAdapter(MascotSettingsAdapter());
+  await MascotService.initialize();
   
   // Initialiser AdMob
   await AdService.instance.initialize();
@@ -48,7 +59,12 @@ class MuscleMasterApp extends StatelessWidget {
         title: 'Muscle Master',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
-        home: const WelcomeScreen(), // Démarrage sur WelcomeScreen
+        // COMPLIANCE: Écran public SANS login requis par Apple
+        home: const PublicWelcomeScreen(),
+        routes: {
+          '/welcome': (context) => const WelcomeScreen(),
+          '/main': (context) => const MainScreen(),
+        },
       ),
     );
   }
@@ -68,6 +84,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const ProgramsScreen(),
     const NutritionScreen(),
+    const CalculatorsScreen(),
     const ProgressScreen(),
     const ProfileScreen(),
   ];
@@ -81,9 +98,10 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
+    return FlexoMascotOverlay(
+      child: Scaffold(
+        body: _screens[_currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -105,6 +123,10 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Nutrition',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.calculate),
+            label: 'Calculateurs',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.show_chart),
             label: 'Progrès',
           ),
@@ -114,6 +136,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }
