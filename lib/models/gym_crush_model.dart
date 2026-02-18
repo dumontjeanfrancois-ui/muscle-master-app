@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 part 'gym_crush_model.g.dart';
 
@@ -107,10 +108,10 @@ class GymCrushUser {
       'pseudo': pseudo,
       'mascotType': mascotType,
       'mascotName': mascotName,
-      'lastActivity': lastActivity.toIso8601String(),
       'gymId': gymId,
       'isActive': isActive,
-      'expiresAt': expiresAt.toIso8601String(),
+      'lastActivity': Timestamp.fromDate(lastActivity),
+      'expiresAt': Timestamp.fromDate(expiresAt),
     };
   }
 
@@ -120,12 +121,10 @@ class GymCrushUser {
       pseudo: data['pseudo'] as String,
       mascotType: data['mascotType'] as String,
       mascotName: data['mascotName'] as String?,
-      lastActivity: DateTime.parse(data['lastActivity'] as String),
       gymId: data['gymId'] as String?,
       isActive: data['isActive'] as bool? ?? true,
-      expiresAt: data['expiresAt'] != null
-          ? DateTime.parse(data['expiresAt'] as String)
-          : DateTime.now().add(const Duration(minutes: 2)),
+      lastActivity: (data['lastActivity'] as Timestamp).toDate(),
+      expiresAt: (data['expiresAt'] as Timestamp).toDate(),
     );
   }
 }
@@ -183,8 +182,8 @@ class GymCrushInteraction {
       'targetPseudo': targetPseudo,
       'targetMascotType': targetMascotType,
       'status': status.toString().split('.').last,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
       'chatUnlocked': chatUnlocked,
     };
   }
@@ -199,8 +198,8 @@ class GymCrushInteraction {
         (e) => e.toString().split('.').last == data['status'],
         orElse: () => GymCrushStatus.pending,
       ),
-      createdAt: DateTime.parse(data['createdAt'] as String),
-      updatedAt: DateTime.parse(data['updatedAt'] as String),
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       chatUnlocked: data['chatUnlocked'] as bool? ?? false,
     );
   }
@@ -271,7 +270,7 @@ class GymCrushMessage {
       'senderId': senderId,
       'receiverId': receiverId,
       'content': content,
-      'sentAt': sentAt.toIso8601String(),
+      'sentAt': Timestamp.fromDate(sentAt),
       'isRead': isRead,
     };
   }
@@ -283,7 +282,7 @@ class GymCrushMessage {
       senderId: data['senderId'] as String,
       receiverId: data['receiverId'] as String,
       content: data['content'] as String,
-      sentAt: DateTime.parse(data['sentAt'] as String),
+      sentAt: (data['sentAt'] as Timestamp).toDate(),
       isRead: data['isRead'] as bool? ?? false,
     );
   }

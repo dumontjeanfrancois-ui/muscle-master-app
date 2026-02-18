@@ -5,6 +5,8 @@ import 'dart:developer' as developer;
 import '../utils/theme.dart';
 import '../models/workout_session.dart';
 import '../services/workout_tracking_service.dart';
+import '../services/gym_crush_service.dart';
+import '../services/mascot_service.dart';
 import 'workout_summary_screen.dart';
 
 class WorkoutTimerScreen extends StatefulWidget {
@@ -46,6 +48,24 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
     _workoutStartTime = DateTime.now();
     _startWorkoutTimer();
     _initializeTracking();
+    _startGymCrushPresence();
+  }
+
+  Future<void> _startGymCrushPresence() async {
+    if (GymCrushService.isGymCrushEnabled()) {
+      try {
+        final mascotSettings = MascotService.getSettings();
+        await GymCrushService.startPresenceHeartbeat(
+          pseudo: mascotSettings.displayName,
+          mascotType: mascotSettings.mascotType,
+          mascotName: mascotSettings.customName,
+          gymId: 'default_gym',
+        );
+        debugPrint('✅ GymCrush: Présence démarrée pour l\'entraînement');
+      } catch (e) {
+        debugPrint('❌ GymCrush: Erreur démarrage présence: $e');
+      }
+    }
   }
 
   /// Initialiser le tracking pour tous les exercices
@@ -263,7 +283,7 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    // Nettoyer les controllers
+    _stopGymCrushPresence();
     for (var controller in _weightControllers.values) {
       controller.dispose();
     }
@@ -271,6 +291,17 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _stopGymCrushPresence() async {
+    if (GymCrushService.isGymCrushEnabled()) {
+      try {
+        await GymCrushService.deactivatePresence();
+        debugPrint('✅ GymCrush: Présence arrêtée après entraînement');
+      } catch (e) {
+        debugPrint('❌ GymCrush: Erreur arrêt présence: $e');
+      }
+    }
   }
 
   @override

@@ -140,8 +140,8 @@ class GymCrushService {
             .collection('gym_crush_presence')
             .doc(userId)
             .update({
-          'lastActivity': now.toIso8601String(),
-          'expiresAt': expiresAt.toIso8601String(),
+          'lastActivity': Timestamp.fromDate(now),
+          'expiresAt': Timestamp.fromDate(expiresAt),
           'isActive': true,
         });
 
@@ -174,7 +174,7 @@ class GymCrushService {
           .doc(userId)
           .update({
         'isActive': false,
-        'expiresAt': DateTime.now().toIso8601String(),
+        'expiresAt': Timestamp.fromDate(DateTime.now()),
       });
       debugPrint('✅ GymCrush: Présence désactivée pour $userId');
     } catch (e) {

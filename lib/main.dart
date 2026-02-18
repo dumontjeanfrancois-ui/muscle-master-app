@@ -20,6 +20,7 @@ import 'services/subscription_service.dart';
 import 'services/ad_service.dart';
 import 'services/vip_service.dart';
 import 'services/mascot_service.dart';
+import 'services/gym_crush_service.dart';
 import 'models/mascot_settings.dart';
 import 'widgets/flexo_mascot_3d_widget.dart';
 
@@ -102,7 +103,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
   
   final List<Widget> _screens = [
@@ -114,7 +115,39 @@ class _MainScreenState extends State<MainScreen> {
     const ProfileScreen(),
   ];
 
-  // Méthode pour changer d'onglet depuis d'autres écrans
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!GymCrushService.isGymCrushEnabled()) return;
+
+    if (state == AppLifecycleState.paused) {
+      GymCrushService.stopPresenceHeartbeat();
+      debugPrint('🛑 GymCrush: Heartbeat pause (app background)');
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      final mascotSettings = MascotService.getSettings();
+      GymCrushService.startPresenceHeartbeat(
+        pseudo: mascotSettings.displayName,
+        mascotType: mascotSettings.mascotType,
+        mascotName: mascotSettings.customName,
+        gymId: 'default_gym',
+      );
+      debugPrint('✅ GymCrush: Heartbeat reprise (app foreground)');
+    }
+  }
+
   void switchToTab(int index) {
     setState(() {
       _currentIndex = index;
