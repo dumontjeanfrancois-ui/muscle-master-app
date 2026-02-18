@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/theme.dart';
+import '../services/mascot_service.dart';
 
 class FlexoMascotWidget extends StatefulWidget {
   final bool showMessage;
@@ -68,7 +69,8 @@ class _FlexoMascotWidgetState extends State<FlexoMascotWidget> with SingleTicker
       },
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/mascot_chat');
+          // Navigation sécurisée vers le chat mascotte
+          Navigator.of(context).pushNamed('/mascot_chat');
         },
         child: Container(
           width: 80,
@@ -105,22 +107,48 @@ class FlexoMascotOverlay extends StatefulWidget {
 }
 
 class _FlexoMascotOverlayState extends State<FlexoMascotOverlay> {
-  bool _showMascot = true;
+  bool _showMascot = false; // Commencer caché
+  bool _mascotEnabled = true;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    _checkMascotSettings();
+  }
+
+  // Vérifier les paramètres de visibilité de la mascotte
+  void _checkMascotSettings() {
+    try {
+      final settings = MascotService.getSettings();
+      final shouldShow = settings.isVisible && settings.selectedMascot != 'none';
+      
+      // Délai d'apparition pour éviter conflit Navigator
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _showMascot = shouldShow;
+            _mascotEnabled = shouldShow;
+          });
+        }
+      });
+    } catch (e) {
+      // Si erreur, ne pas afficher la mascotte
       if (mounted) {
         setState(() {
-          _showMascot = true;
+          _showMascot = false;
+          _mascotEnabled = false;
         });
       }
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Ne pas afficher la mascotte si désactivée
+    if (!_mascotEnabled) {
+      return widget.child;
+    }
+
     return Stack(
       children: [
         widget.child,

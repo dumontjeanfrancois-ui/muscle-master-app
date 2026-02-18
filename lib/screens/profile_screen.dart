@@ -45,12 +45,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isLoading = true;
     });
 
-    final imagePath = await _profileService.getProfileImagePath();
-    final username = await _profileService.getUsername();
+    final imagePath = await ProfileService.getProfileImagePath();
+    final username = await ProfileService.getUsername();
 
     setState(() {
-      _profileImagePath = imagePath;
-      _username = username;
+      _profileImagePath = imagePath ?? '';
+      _username = username ?? 'Utilisateur';
       _isLoading = false;
     });
   }
@@ -65,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
       if (image != null) {
-        await _profileService.saveProfileImagePath(image.path);
+        await ProfileService.setProfileImagePath(image.path);
         setState(() {
           _profileImagePath = image.path;
         });

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'workout_timer_screen.dart';
-
+import 'workout_history_screen.dart';
+import 'exercise_library_screen.dart';
 import 'calculators_screen.dart';
 import 'real_video_analysis_screen.dart';
-import 'nutrition_screen.dart';
+import 'food_journal_screen.dart';
+import 'combined_progress_screen.dart';
 import 'ai_coach_screen.dart';
+import '../widgets/today_workout_widget.dart';
+import '../widgets/mascot_floating_button.dart';
+import '../utils/theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,12 +26,29 @@ class HomeScreen extends StatelessWidget {
             letterSpacing: 2,
           ),
         ),
+        actions: [
+          // 📊 Bouton Historique
+          IconButton(
+            icon: const Icon(Icons.history, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WorkoutHistoryScreen(),
+                ),
+              );
+            },
+            tooltip: 'Historique des séances',
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
             // En-tête
             Container(
               padding: const EdgeInsets.all(24),
@@ -114,6 +135,77 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
+            // Bouton Vue d'ensemble
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CombinedProgressScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.neonPurple.withValues(alpha: 0.2),
+                      AppTheme.neonBlue.withValues(alpha: 0.2),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppTheme.neonPurple.withValues(alpha: 0.5), width: 2),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.neonPurple.withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.insights,
+                        color: AppTheme.neonPurple,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'VUE D\'ENSEMBLE',
+                            style: TextStyle(
+                              color: AppTheme.neonPurple,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Entraînement + Nutrition = Résultats',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppTheme.neonPurple,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
             // Programme du jour
             const Text(
               'PROGRAMME DU JOUR',
@@ -125,83 +217,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.green.withOpacity(0.2),
-                    Colors.blue.withOpacity(0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.green, width: 2),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Push Pull Legs',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      _buildProgramDetail(Icons.timer, '60 min'),
-                      const SizedBox(width: 16),
-                      _buildProgramDetail(Icons.fitness_center, '6 exercices'),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Programme exemple Push Pull Legs
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WorkoutTimerScreen(
-                            workoutName: 'Push Pull Legs - Jour Push',
-                            exercises: const [
-                              {'name': 'Développé couché', 'sets': 4, 'reps': 8, 'rest': 90},
-                              {'name': 'Développé incliné haltères', 'sets': 3, 'reps': 10, 'rest': 75},
-                              {'name': 'Écarté poulie haute', 'sets': 3, 'reps': 12, 'rest': 60},
-                              {'name': 'Développé militaire', 'sets': 4, 'reps': 8, 'rest': 90},
-                              {'name': 'Élévations latérales', 'sets': 3, 'reps': 12, 'rest': 60},
-                              {'name': 'Extension triceps', 'sets': 3, 'reps': 12, 'rest': 60},
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.play_arrow),
-                        SizedBox(width: 8),
-                        Text(
-                          'DÉMARRER',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            TodayWorkoutWidget(key: UniqueKey()),
             const SizedBox(height: 24),
 
             // Actions rapides
@@ -229,9 +245,9 @@ class HomeScreen extends StatelessWidget {
                 Expanded(
                   child: _buildActionButton(
                     context,
-                    'Recettes',
-                    Icons.restaurant,
-                    Colors.orange,
+                    'Journal Alimentaire',
+                    Icons.restaurant_menu,
+                    Colors.green,
                   ),
                 ),
               ],
@@ -258,13 +274,39 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildActionButton(
+                    context,
+                    'Exercices',
+                    Icons.library_books,
+                    const Color(0xFF4A90E2), // Bleu néon
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ExerciseLibraryScreen()),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Container()), // Espace vide
+              ],
+            ),
           ],
         ),
       ),
-    );
-  }
+      
+      // Bouton flottant de la mascotte
+      const MascotFloatingButton(),
+    ],
+  ),
+);
+}
 
-  String _getTimeOfDay() {
+String _getTimeOfDay() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'MATIN';
     if (hour < 18) return 'APRÈS-MIDI';
@@ -320,20 +362,20 @@ class HomeScreen extends StatelessWidget {
     String label,
     IconData icon,
     Color color,
+    [VoidCallback? customOnTap]
   ) {
     return InkWell(
-      onTap: () {
+      onTap: customOnTap ?? () {
         // Navigation vers les écrans correspondants
         if (label == 'Calculateur') {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const CalculatorsScreen()),
           );
-        } else if (label == 'Recettes') {
-          // Naviguer vers NutritionScreen directement
+        } else if (label == 'Journal Alimentaire') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const NutritionScreen()),
+            MaterialPageRoute(builder: (context) => const FoodJournalScreen()),
           );
         } else if (label == 'Analyse Vidéo') {
           Navigator.push(
@@ -344,6 +386,11 @@ class HomeScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AICoachScreen()),
+          );
+        } else if (label == 'Exercices') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ExerciseLibraryScreen()),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -382,3 +429,4 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+

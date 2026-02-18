@@ -47,22 +47,30 @@ class AdService {
   int _interstitialLoadAttempts = 0;
   int _actionsSinceLastAd = 0;
 
-  /// Initialiser AdMob
+  /// Initialiser AdMob (uniquement sur mobile, pas sur Web)
   Future<void> initialize() async {
     if (_isInitialized) return;
+    
+    // Ne pas initialiser AdMob sur Web
+    if (kIsWeb) {
+      if (kDebugMode) {
+        debugPrint('ℹ️ AdMob skipped on Web platform');
+      }
+      return;
+    }
 
     try {
       await MobileAds.instance.initialize();
       _isInitialized = true;
       if (kDebugMode) {
-        print('✅ AdMob initialized');
+        debugPrint('✅ AdMob initialized');
       }
 
       // Pré-charger une pub interstitielle
       _loadInterstitialAd();
     } catch (e) {
       if (kDebugMode) {
-        print('❌ AdMob initialization error: $e');
+        debugPrint('❌ AdMob initialization error: $e');
       }
     }
   }

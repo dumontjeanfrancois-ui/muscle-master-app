@@ -32,18 +32,24 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
       final result = await AuthService.deleteAccount();
       if (!mounted) return;
 
-      if (result['success'] == true) {
+      final success = result['success'] as bool? ?? false;
+      final message = result['message'] as String? ?? 'Erreur inconnue';
+      
+      if (success) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Compte supprimé avec succès'),
             backgroundColor: AppTheme.neonGreen,
           ),
         );
+        if (!mounted) return;
         Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false);
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Erreur lors de la suppression'),
+            content: Text(message),
             backgroundColor: AppTheme.neonRed,
           ),
         );

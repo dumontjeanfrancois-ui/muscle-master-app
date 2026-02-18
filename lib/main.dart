@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,6 +13,9 @@ import 'screens/nutrition_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/calculators_screen.dart';
+import 'screens/mascot_chat_screen.dart';
+import 'screens/mascot_settings_screen.dart';
+import 'screens/account_deletion_screen.dart';
 import 'services/subscription_service.dart';
 import 'services/ad_service.dart';
 import 'services/vip_service.dart';
@@ -32,8 +36,10 @@ void main() async {
   Hive.registerAdapter(MascotSettingsAdapter());
   await MascotService.initialize();
   
-  // Initialiser AdMob
-  await AdService.instance.initialize();
+  // Initialiser AdMob (uniquement sur mobile, pas sur Web)
+  if (!kIsWeb) {
+    await AdService.instance.initialize();
+  }
   
   // Initialiser VIP Service (Easter Egg)
   await VipService().initialize();
@@ -64,6 +70,25 @@ class MuscleMasterApp extends StatelessWidget {
         routes: {
           '/welcome': (context) => const WelcomeScreen(),
           '/main': (context) => const MainScreen(),
+          '/mascot_chat': (context) => const MascotChatScreen(),
+          '/mascot_settings': (context) => const MascotSettingsScreen(),
+          '/account_deletion': (context) => const AccountDeletionScreen(),
+        },
+        onGenerateRoute: (settings) {
+          // Sécurité: route generator pour éviter les erreurs
+          if (kDebugMode) {
+            debugPrint('🔍 Navigation tentée vers: ${settings.name}');
+          }
+          return null; // Laisse le système utiliser les routes définies
+        },
+        onUnknownRoute: (settings) {
+          // Fallback sécurisé pour les routes inconnues
+          if (kDebugMode) {
+            debugPrint('⚠️ Route inconnue: ${settings.name}');
+          }
+          return MaterialPageRoute(
+            builder: (context) => const PublicWelcomeScreen(),
+          );
         },
       ),
     );
