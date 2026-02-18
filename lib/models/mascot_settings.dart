@@ -58,6 +58,9 @@ class MascotSettings extends HiveObject {
   /// Obtenir le nom affiché (personnalisé ou par défaut)
   String get displayName => customName ?? defaultName;
 
+  /// Alias pour mascotType (utilisé dans le code pour cohérence)
+  String get selectedMascot => mascotType;
+
   /// Copier avec modifications
   MascotSettings copyWith({
     String? mascotType,
