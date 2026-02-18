@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import '../utils/theme.dart';
+
+class FlexoMascotWidget extends StatefulWidget {
+  final bool showMessage;
+  final String message;
+  final bool isMoving;
+
+  const FlexoMascotWidget({
+    super.key,
+    this.showMessage = false,
+    this.message = '',
+    this.isMoving = false,
+  });
+
+  @override
+  State<FlexoMascotWidget> createState() => _FlexoMascotWidgetState();
+}
+
+class _FlexoMascotWidgetState extends State<FlexoMascotWidget> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _bounceAnimation = Tween<double>(begin: 0, end: -10).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+    if (widget.isMoving) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(FlexoMascotWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isMoving && !_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    } else if (!widget.isMoving && _controller.isAnimating) {
+      _controller.stop();
+      _controller.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _bounceAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _bounceAnimation.value),
+          child: child,
+        );
+      },
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, '/mascot_chat');
+        },
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: AppTheme.cardDark,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primaryOrange.withOpacity(0.3),
+                blurRadius: 12,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.sports_martial_arts,
+            color: AppTheme.primaryOrange,
+            size: 40,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FlexoMascotOverlay extends StatefulWidget {
+  final Widget child;
+
+  const FlexoMascotOverlay({super.key, required this.child});
+
+  @override
+  State<FlexoMascotOverlay> createState() => _FlexoMascotOverlayState();
+}
+
+class _FlexoMascotOverlayState extends State<FlexoMascotOverlay> {
+  bool _showMascot = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _showMascot = true;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        widget.child,
+        if (_showMascot)
+          Positioned(
+            bottom: 100,
+            right: 16,
+            child: const FlexoMascotWidget(
+              isMoving: true,
+            ),
+          ),
+      ],
+    );
+  }
+}

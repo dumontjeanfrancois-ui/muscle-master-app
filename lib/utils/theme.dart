@@ -7,6 +7,7 @@ class AppTheme {
   static const Color secondaryDark = Color(0xFF252B4A);
   static const Color surfaceDark = Color(0xFF1A1F3A); // Alias pour cardDark
   static const Color backgroundLight = Color(0xFF141829); // Couleur de fond légèrement plus claire
+  static const Color backgroundDark = Color(0xFF0A0E27); // Alias pour primaryDark
   
   // Couleurs néon
   static const Color neonBlue = Color(0xFF4A90E2);
@@ -15,6 +16,7 @@ class AppTheme {
   static const Color neonOrange = Color(0xFFFF6B35);
   static const Color neonPink = Color(0xFFFF1493);
   static const Color neonRed = Color(0xFFFF4444);
+  static const Color primaryOrange = neonOrange;
   
   // Couleurs de texte
   static const Color textPrimary = Color(0xFFFFFFFF);
