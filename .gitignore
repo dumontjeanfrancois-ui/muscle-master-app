@@ -55,3 +55,8 @@ key.properties
 # API Keys and secrets
 **/api_keys.dart
 **/secrets.dart
+
+# Build artifacts
+*.apk
+*.aab
+*.tar.gz
