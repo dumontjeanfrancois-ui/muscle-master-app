@@ -5,7 +5,7 @@ import 'dart:developer' as developer;
 import '../utils/theme.dart';
 import '../models/workout_session.dart';
 import '../services/workout_tracking_service.dart';
-import '../services/gym_crush_service.dart';
+import '../services/social_service.dart';
 import '../services/mascot_service.dart';
 import 'workout_summary_screen.dart';
 
@@ -52,18 +52,18 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
   }
 
   Future<void> _startGymCrushPresence() async {
-    if (GymCrushService.isGymCrushEnabled()) {
+    if (SocialService.isSocialEnabled()) {
       try {
         final mascotSettings = MascotService.getSettings();
-        await GymCrushService.startPresenceHeartbeat(
+        await SocialService.startPresenceHeartbeat(
           pseudo: mascotSettings.displayName,
           mascotType: mascotSettings.mascotType,
           mascotName: mascotSettings.customName,
           gymId: 'default_gym',
         );
-        debugPrint('✅ GymCrush: Présence démarrée pour l\'entraînement');
+        debugPrint('✅ Social: Présence démarrée pour l\'entraînement');
       } catch (e) {
-        debugPrint('❌ GymCrush: Erreur démarrage présence: $e');
+        debugPrint('❌ Social: Erreur démarrage présence: $e');
       }
     }
   }
@@ -294,12 +294,12 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
   }
 
   Future<void> _stopGymCrushPresence() async {
-    if (GymCrushService.isGymCrushEnabled()) {
+    if (SocialService.isSocialEnabled()) {
       try {
-        await GymCrushService.deactivatePresence();
-        debugPrint('✅ GymCrush: Présence arrêtée après entraînement');
+        await SocialService.deactivatePresence();
+        debugPrint('✅ Social: Présence arrêtée après entraînement');
       } catch (e) {
-        debugPrint('❌ GymCrush: Erreur arrêt présence: $e');
+        debugPrint('❌ Social: Erreur arrêt présence: $e');
       }
     }
   }

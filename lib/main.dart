@@ -20,8 +20,9 @@ import 'services/subscription_service.dart';
 import 'services/ad_service.dart';
 import 'services/vip_service.dart';
 import 'services/mascot_service.dart';
-import 'services/gym_crush_service.dart';
+import 'services/social_service.dart';
 import 'models/mascot_settings.dart';
+import 'models/social_model.dart';
 import 'widgets/flexo_mascot_3d_widget.dart';
 
 void main() async {
@@ -35,7 +36,9 @@ void main() async {
   // Initialiser Hive pour les paramètres de la mascotte
   await Hive.initFlutter();
   Hive.registerAdapter(MascotSettingsAdapter());
+  Hive.registerAdapter(SocialSettingsAdapter());
   await MascotService.initialize();
+  await SocialService.initialize();
   
   // Initialiser AdMob (uniquement sur mobile, pas sur Web)
   if (!kIsWeb) {
@@ -129,22 +132,22 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!GymCrushService.isGymCrushEnabled()) return;
+    if (!SocialService.isSocialEnabled()) return;
 
     if (state == AppLifecycleState.paused) {
-      GymCrushService.stopPresenceHeartbeat();
-      debugPrint('🛑 GymCrush: Heartbeat pause (app background)');
+      SocialService.stopPresenceHeartbeat();
+      debugPrint('🛑 Social: Heartbeat pause (app background)');
     }
 
     if (state == AppLifecycleState.resumed) {
       final mascotSettings = MascotService.getSettings();
-      GymCrushService.startPresenceHeartbeat(
+      SocialService.startPresenceHeartbeat(
         pseudo: mascotSettings.displayName,
         mascotType: mascotSettings.mascotType,
         mascotName: mascotSettings.customName,
         gymId: 'default_gym',
       );
-      debugPrint('✅ GymCrush: Heartbeat reprise (app foreground)');
+      debugPrint('✅ Social: Heartbeat reprise (app foreground)');
     }
   }
 
