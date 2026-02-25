@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../utils/theme.dart';
 import '../services/mascot_service.dart';
 import '../models/mascot_settings.dart';
+import 'social_bottom_sheet.dart';
 
 /// Widget Mascotte 3D Premium
 /// Rendu pseudo-3D avec profondeur, ombre, glow et animations fluides
@@ -132,24 +133,8 @@ class _FlexoMascot3DWidgetState extends State<FlexoMascot3DWidget>
     MascotService.recordInteraction();
     if (widget.onTap != null) {
       widget.onTap!();
-    } else {
-      _showMascotBottomSheet();
     }
-  }
-
-  /// Afficher le bottom sheet animé premium
-  void _showMascotBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      enableDrag: true,
-      backgroundColor: Colors.transparent,
-      useSafeArea: true,
-      builder: (context) => MascotBottomSheet(
-        mascotImage: _mascotImage,
-      ),
-    );
+    // Ne rien faire par défaut, l'action est gérée par le parent
   }
 
   @override
@@ -170,7 +155,6 @@ class _FlexoMascot3DWidgetState extends State<FlexoMascot3DWidget>
     return AnimatedBuilder(
       animation: Listenable.merge([
         _floatAnimation,
-        _glowAnimation,
         _scaleAnimation,
       ]),
       builder: (context, child) {
@@ -180,324 +164,25 @@ class _FlexoMascot3DWidgetState extends State<FlexoMascot3DWidget>
             scale: _scaleAnimation.value,
             child: GestureDetector(
               onTap: _handleTap,
-              child: Container(
+              child: SizedBox(
                 width: 90,
                 height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  // Effet de profondeur avec ombres multiples
-                  boxShadow: [
-                    // Ombre principale (profondeur)
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 20,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 8),
-                    ),
-                    // Glow animé (effet néon)
-                    BoxShadow(
-                      color: AppTheme.primaryOrange.withOpacity(_glowAnimation.value),
-                      blurRadius: 25,
-                      spreadRadius: 5,
-                      offset: const Offset(0, 0),
-                    ),
-                    // Highlight supérieur (effet 3D)
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.1),
-                      blurRadius: 10,
-                      spreadRadius: -2,
-                      offset: const Offset(0, -4),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // Fond dégradé
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                            colors: [
-                              AppTheme.cardDark,
-                              AppTheme.cardDark.withOpacity(0.8),
-                            ],
-                            stops: const [0.3, 1.0],
-                          ),
-                        ),
-                      ),
-                      // Image mascotte
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          _mascotImage,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            // Fallback icon si image non trouvée
-                            return const Icon(
-                              Icons.sports_martial_arts,
-                              color: AppTheme.primaryOrange,
-                              size: 50,
-                            );
-                          },
-                        ),
-                      ),
-                      // Overlay highlight 3D
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 40,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.white.withOpacity(0.15),
-                                Colors.transparent,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Image.asset(
+                  _mascotImage,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.sports_martial_arts,
+                      color: AppTheme.primaryOrange,
+                      size: 50,
+                    );
+                  },
                 ),
               ),
             ),
           ),
         );
       },
-    );
-  }
-}
-
-/// Bottom Sheet Animé Premium pour la Mascotte
-class MascotBottomSheet extends StatefulWidget {
-  final String mascotImage;
-
-  const MascotBottomSheet({
-    super.key,
-    required this.mascotImage,
-  });
-
-  @override
-  State<MascotBottomSheet> createState() => _MascotBottomSheetState();
-}
-
-class _MascotBottomSheetState extends State<MascotBottomSheet>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final mascotSettings = MascotService.getSettings();
-    final mascotName = mascotSettings.displayName;
-
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: AppTheme.cardDark,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryOrange.withOpacity(0.2),
-                  blurRadius: 30,
-                  spreadRadius: 5,
-                ),
-              ],
-            ),
-            child: ListView(
-              controller: scrollController,
-              padding: EdgeInsets.zero,
-              children: [
-                // Poignée de fermeture (centrée)
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 12),
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppTheme.textSecondary.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Mascotte en grand avec animation (centrée)
-                Center(
-                  child: ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryOrange.withOpacity(0.4),
-                            blurRadius: 40,
-                            spreadRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          widget.mascotImage,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: AppTheme.cardDark,
-                              child: const Icon(
-                                Icons.sports_martial_arts,
-                                color: AppTheme.primaryOrange,
-                                size: 80,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Nom mascotte
-                Text(
-                  mascotName,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryOrange,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Votre coach personnel',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 30),
-                // Boutons d'action
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      _buildActionButton(
-                        icon: Icons.chat_bubble_rounded,
-                        label: 'Chat IA',
-                        color: AppTheme.neonPurple,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.of(context).pushNamed('/mascot_chat');
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildActionButton(
-                        icon: Icons.settings_rounded,
-                        label: 'Paramètres mascotte',
-                        color: AppTheme.neonBlue,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.of(context).pushNamed('/mascot_settings');
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildActionButton(
-                        icon: Icons.close_rounded,
-                        label: 'Fermer',
-                        color: AppTheme.textSecondary,
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(width: 16),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-            const Spacer(),
-            Icon(Icons.arrow_forward_ios_rounded, color: color, size: 16),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -561,6 +246,7 @@ class _FlexoMascot3DOverlayState extends State<FlexoMascot3DOverlay> {
             right: 16,
             child: FlexoMascot3DWidget(
               isMoving: true,
+              onTap: () => SocialBottomSheet.show(context),
             ),
           ),
       ],

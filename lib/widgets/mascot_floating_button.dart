@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/mascot_service.dart';
 import '../models/mascot_settings.dart';
-import '../screens/mascot_chat_screen.dart';
-import '../utils/theme.dart';
+import 'social_bottom_sheet.dart';
 
 /// Bouton flottant de la mascotte dans l'écran d'accueil
 /// S'affiche si la mascotte est visible dans les paramètres
@@ -18,42 +17,14 @@ class MascotFloatingButton extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Positioned(
-      bottom: 80,
-      right: 16,
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MascotChatScreen(),
-            ),
-          );
-        },
-        child: Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppTheme.primaryOrange.withValues(alpha: 0.2),
-            border: Border.all(
-              color: AppTheme.primaryOrange,
-              width: 3,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primaryOrange.withValues(alpha: 0.5),
-                blurRadius: 20,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              settings.assetPath,
-              fit: BoxFit.cover,
-            ),
-          ),
+    return GestureDetector(
+      onTap: () => SocialBottomSheet.show(context),
+      child: SizedBox(
+        width: 80,
+        height: 80,
+        child: Image.asset(
+          settings.assetPath,
+          fit: BoxFit.contain,
         ),
       ),
     );

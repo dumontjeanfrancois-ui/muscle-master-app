@@ -72,24 +72,12 @@ class _FlexoMascotWidgetState extends State<FlexoMascotWidget> with SingleTicker
           // Navigation sécurisée vers le chat mascotte
           Navigator.of(context).pushNamed('/mascot_chat');
         },
-        child: Container(
+        child: SizedBox(
           width: 80,
           height: 80,
-          decoration: BoxDecoration(
-            color: AppTheme.cardDark,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.primaryOrange.withOpacity(0.3),
-                blurRadius: 12,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.sports_martial_arts,
-            color: AppTheme.primaryOrange,
-            size: 40,
+          child: Image.asset(
+            MascotService.getSettings().assetPath,
+            fit: BoxFit.contain,
           ),
         ),
       ),

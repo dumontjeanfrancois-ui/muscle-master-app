@@ -7,6 +7,7 @@ import 'food_journal_screen.dart';
 import 'combined_progress_screen.dart';
 import 'ai_coach_screen.dart';
 import '../widgets/today_workout_widget.dart';
+import '../widgets/mascot_floating_button.dart';
 
 import '../utils/theme.dart';
 
@@ -297,6 +298,12 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      // 🦁 Bouton Mascotte Flottant
+      Positioned(
+        right: 12,
+        bottom: 12 + kBottomNavigationBarHeight,
+        child: const MascotFloatingButton(),
       ),
     ],
   ),
