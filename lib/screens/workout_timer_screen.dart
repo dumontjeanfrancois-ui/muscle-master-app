@@ -7,6 +7,7 @@ import '../models/workout_session.dart';
 import '../services/workout_tracking_service.dart';
 import '../services/social_service.dart';
 import '../services/mascot_service.dart';
+import '../widgets/flexo_mascot_3d_widget.dart';
 import 'workout_summary_screen.dart';
 
 class WorkoutTimerScreen extends StatefulWidget {
@@ -310,7 +311,8 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
     final progress = (_currentExerciseIndex + 1) / widget.exercises.length;
     final workoutDuration = Duration(seconds: _totalWorkoutTime);
 
-    return Scaffold(
+    return FlexoMascot3DOverlay(
+      child: Scaffold(
       appBar: AppBar(
         title: Text(widget.workoutName),
         actions: [
@@ -481,6 +483,7 @@ class _WorkoutTimerScreenState extends State<WorkoutTimerScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 
