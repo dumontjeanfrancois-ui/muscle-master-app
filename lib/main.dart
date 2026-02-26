@@ -13,6 +13,7 @@ import 'screens/nutrition_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/calculators_screen.dart';
+import 'screens/mascot_chat_screen.dart';
 import 'screens/mascot_settings_screen.dart';
 import 'screens/account_deletion_screen.dart';
 import 'services/subscription_service.dart';
@@ -73,6 +74,7 @@ class MuscleMasterApp extends StatelessWidget {
         routes: {
           '/welcome': (context) => const WelcomeScreen(),
           '/main': (context) => const MainScreen(),
+          '/mascot_chat': (context) => const MascotChatScreen(),
           '/mascot_settings': (context) => const MascotSettingsScreen(),
           '/account_deletion': (context) => const AccountDeletionScreen(),
         },
